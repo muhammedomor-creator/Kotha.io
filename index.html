@@ -376,6 +376,7 @@
 
     // রেকর্ডার এবং অডিও ম্যানিপুলেশন স্টেট
     let mediaRecorder = null;
+    let activeStream = null; // সেশন রিলিজ ট্র্যাকার
     let originalAudioBlob = null;
     let originalArrayBuffer = null;
     let processedBase64 = "";
@@ -780,7 +781,7 @@
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="${isLiked ? 'currentColor' : 'none'}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                   </svg>
-                  <span>পছন্দ (${v.likes || 0})</span>
+                  <span>পছند (${v.likes || 0})</span>
                 </button>
 
                 <button 
@@ -816,7 +817,7 @@
                 ${v.replies && v.replies.length > 0 ? v.replies.map(reply => `
                   <div class="p-2.5 bg-slate-950/40 rounded-xl border border-slate-900">
                     <div class="flex items-center justify-between text-[9px] text-slate-500 mb-1">
-                      <span>👤 বেনামী ব্যবহারকারী</span>
+                      <span>👤  ব্যবহারকারী</span>
                       <span>${new Date(reply.createdAt).toLocaleTimeString('bn-BD', { hour: '2-digit', minute: '2-digit' })}</span>
                     </div>
                     <p class="text-xs text-slate-300">${reply.text}</p>
@@ -1077,7 +1078,7 @@
       }
     }
 
-    // মন্তব্য যুক্ত করার ফাংশน
+    // মন্তব্য যুক্ত করার ফাংশন
     async function handleReplySubmission(voiceId, text) {
       const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'voices', voiceId);
       const newReply = {
@@ -1107,11 +1108,9 @@
         }
 
         // ব্রাউজার সিকিউরিটি প্রোটোকল ডিটেক্ট করা হচ্ছে
-        const isSecureContext = window.isSecureContext;
         const hasMediaDevices = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
 
         if (!hasMediaDevices) {
-          // যদি ব্রাউজার মাইক্রোফোন সাপোর্ট না করে বা ইনসিকিউর ডোমেইনে থাকে
           let errorMsg = "আপনার ব্রাউজারটি সিকিউরড মোডে নেই।";
           if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
             errorMsg = "মাইক্রোফোন চালুর জন্য সাইটটি অবশ্যই সুরক্ষিত 'https://' প্রোটোকলে চালু থাকতে হবে।";
@@ -1137,16 +1136,34 @@
           } 
         });
 
+        activeStream = stream; // ট্র্যাকিং সেশন স্টোর করা হলো
+
+        // ডাইনামিক মোবাইল অডিও কোডেক ডিটেকশন (যাতে ক্র্যাশ না করে)
+        let options = {};
+        if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+          options = { mimeType: 'audio/webm;codecs=opus' };
+        } else if (MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')) {
+          options = { mimeType: 'audio/ogg;codecs=opus' };
+        } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+          options = { mimeType: 'audio/mp4' };
+        }
+
         // সাকসেসফুল পারমিশন ট্রিগার
-        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder = new MediaRecorder(stream, options);
         audioChunks = [];
 
         mediaRecorder.ondataavailable = (e) => {
-          if (e.data.size > 0) audioChunks.push(e.data);
+          if (e.data && e.data.size > 0) {
+            audioChunks.push(e.data);
+          }
         };
 
         mediaRecorder.onstop = async () => {
-          originalAudioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+          // রেকর্ড শেষ হওয়া মাত্রই আমরা অডিও ট্র্যাক ক্লোজ করে দেব যাতে ব্রাউজারের সবুজ লাইটটি বন্ধ হয়ে যায়
+          stream.getTracks().forEach(track => track.stop());
+          activeStream = null;
+
+          originalAudioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
           originalArrayBuffer = await originalAudioBlob.arrayBuffer();
 
           // ইনিশিয়াল কনভার্সন
@@ -1199,7 +1216,7 @@
         document.getElementById('recorder-status-text').innerHTML = `
           <span class="text-xs text-rose-400 font-bold flex flex-col items-center gap-1.5 p-3 bg-rose-950/20 border border-rose-900/30 rounded-xl">
             ⚠️ ${errorMsg}
-            <span class="text-[10px] font-normal text-slate-400">ক্রোম ব্রাউজারের উপরে থাকা তালার (Lock) চিহ্নে ক্লিক করে মাইক্রোফোনটি 'Allowed' করুন।</span>
+            <span class="text-[10px] font-normal text-slate-400">ক্রোম ব্রাউজারের উপরে থাকা তালা (Lock) চিহ্নে ক্লিক করে মাইক্রোফোনটি 'Allowed' করুন।</span>
           </span>`;
       }
     }
@@ -1344,8 +1361,9 @@
 
     // রেকর্ডার স্টেট রিসেট
     function resetRecorderState() {
-      if (mediaRecorder && isRecording) {
-        mediaRecorder.stop();
+      if (activeStream) {
+        activeStream.getTracks().forEach(track => track.stop());
+        activeStream = null;
       }
       isRecording = false;
       clearInterval(recordTimer);
