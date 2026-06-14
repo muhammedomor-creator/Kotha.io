@@ -220,6 +220,9 @@
             <div id="timer-display" class="text-2xl font-mono font-bold text-slate-300 mt-1 hidden">0:00</div>
           </div>
 
+          <!-- AUDIO VISUALIZATION CANVAS DURING RECORDING -->
+          <canvas id="visualizer-canvas" class="w-full max-w-md h-12 mb-4 rounded-xl opacity-80 hidden"></canvas>
+
           <!-- Voice Changer Options (Visible after recording stops) -->
           <div id="voice-changer-section" class="w-full max-w-lg px-6 mb-6 py-4 bg-slate-900/60 border border-slate-800/80 rounded-2xl text-center hidden animate-in fade-in zoom-in-95 duration-200">
             <span class="block text-xs font-bold text-purple-400 mb-2.5">🎭 ভয়েস পরিবর্তন করুন (ঐচ্ছিক):</span>
@@ -407,6 +410,11 @@
     // AUDIO PLAYBACK STATE
     let activePlayingAudio = null;
     let activePlayingId = null;
+
+    // AUDIO CONTEXT & VISUALIZATION FOR RECORDING
+    let audioContext = null;
+    let analyserNode = null;
+    let animationFrameId = null;
 
     // Set Dynamic Year in Footer
     const currentYear = new Date().getFullYear();
@@ -825,7 +833,7 @@
                   </span>
                   <span class="text-[11px] text-slate-500">${dateStr} | ${timeStr}</span>
                   ${v.reportsCount && v.reportsCount > 0 ? `
-                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-950 text-rose-500 border border-rose-900/30">🚨 রিপোর্ট: ${v.reportsCount}</span>
+                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-950 text-rose-500 border border-rose-900/30">🚨 : ${v.reportsCount}</span>
                   ` : ''}
                 </div>
                 <h4 class="text-base font-bold text-slate-100">${v.title || "বেনামী কণ্ঠ"}</h4>
@@ -1398,6 +1406,68 @@
     }
 
     // -----------------------------------------------------------------
+    // CANVA LIVE WAVE VISUALIZER
+    // -----------------------------------------------------------------
+    function startVisualizerAnimation(stream) {
+      const canvas = document.getElementById('visualizer-canvas');
+      if (!canvas) return;
+      canvas.classList.remove('hidden');
+      const canvasCtx = canvas.getContext('2d');
+
+      try {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const source = audioContext.createMediaStreamSource(stream);
+        analyserNode = audioContext.createAnalyser();
+        analyserNode.fftSize = 256;
+        
+        source.connect(analyserNode);
+
+        const bufferLength = analyserNode.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+
+        function draw() {
+          animationFrameId = requestAnimationFrame(draw);
+          if (!analyserNode) return;
+          analyserNode.getByteFrequencyData(dataArray);
+
+          canvasCtx.fillStyle = '#020617'; // slate-950 matched background
+          canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+          const barWidth = (canvas.width / bufferLength) * 2.5;
+          let barHeight;
+          let x = 0;
+
+          for (let i = 0; i < bufferLength; i++) {
+            barHeight = dataArray[i] / 2.5;
+
+            // Gradient color: Purple to Indigo waves
+            canvasCtx.fillStyle = `rgb(${barHeight + 100}, 85, 247)`;
+            canvasCtx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+
+            x += barWidth + 1;
+          }
+        }
+
+        draw();
+      } catch (e) {
+        console.warn("Visualizer failed to start safely:", e);
+      }
+    }
+
+    function stopVisualizerAnimation() {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+      if (audioContext) {
+        try {
+          audioContext.close();
+        } catch (e) {}
+      }
+      const canvas = document.getElementById('visualizer-canvas');
+      if (canvas) canvas.classList.add('hidden');
+    }
+
+    // -----------------------------------------------------------------
     // RECORDING CONTROL ENGINE
     // -----------------------------------------------------------------
     async function initRecorder() {
@@ -1409,21 +1479,42 @@
 
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         
-        // OPUS compression targeting optimal 24kbps format to keep 5-10 minute files under 1MB Firestore limits
-        const options = { 
-          audioBitsPerSecond: 24000, 
-          mimeType: MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm'
-        };
+        // ULTIMATE SAFARI/CHROME MULTI-PLATFORM RECORDING COMPATIBILITY RESOLVER
+        let options = {};
+        try {
+          if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+            options = { mimeType: 'audio/webm;codecs=opus', audioBitsPerSecond: 24000 };
+          } else if (MediaRecorder.isTypeSupported('audio/webm')) {
+            options = { mimeType: 'audio/webm', audioBitsPerSecond: 24000 };
+          } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+            options = { mimeType: 'audio/mp4', audioBitsPerSecond: 24000 };
+          } else if (MediaRecorder.isTypeSupported('audio/aac')) {
+            options = { mimeType: 'audio/aac', audioBitsPerSecond: 24000 };
+          }
+        } catch (e) {
+          console.warn("MimeType checking blocked by browser, running defaults:", e);
+        }
 
-        mediaRecorder = new MediaRecorder(stream, options);
+        try {
+          if (Object.keys(options).length > 0) {
+            mediaRecorder = new MediaRecorder(stream, options);
+          } else {
+            mediaRecorder = new MediaRecorder(stream);
+          }
+        } catch (initErr) {
+          console.warn("MediaRecorder creation with configurations failed, running raw default:", initErr);
+          mediaRecorder = new MediaRecorder(stream);
+        }
+
         audioChunks = [];
 
         mediaRecorder.ondataavailable = (e) => {
-          if (e.data.size > 0) audioChunks.push(e.data);
+          if (e.data && e.data.size > 0) audioChunks.push(e.data);
         };
 
         mediaRecorder.onstop = () => {
-          const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+          const mimeTypeString = mediaRecorder.mimeType || 'audio/webm';
+          const audioBlob = new Blob(audioChunks, { type: mimeTypeString });
           const reader = new FileReader();
           reader.readAsDataURL(audioBlob);
           reader.onloadend = () => {
@@ -1458,11 +1549,15 @@
           
           // Stop capturing tracks to free microphone icon indicator
           stream.getTracks().forEach(track => track.stop());
+          stopVisualizerAnimation();
         };
 
         mediaRecorder.start();
         isRecording = true;
         
+        // Start Canvas Visualizer Animation
+        startVisualizerAnimation(stream);
+
         // Timer display setup
         recordingDuration = 0;
         document.getElementById('timer-display').classList.remove('hidden');
@@ -1492,19 +1587,21 @@
     }
 
     function stopRecordingProcess() {
-      if (mediaRecorder && isRecording) {
-        mediaRecorder.stop();
-        isRecording = false;
-        clearInterval(recordTimer);
-      }
-    }
-
-    function resetRecorderState() {
-      if (mediaRecorder && isRecording) {
-        mediaRecorder.stop();
+      // PROTECTED SAFE RECORD SHUTDOWN GRAPH TO AVOID iOS / CONCURRENT CHANNELS LOCKS
+      try {
+        if (mediaRecorder && mediaRecorder.state !== "inactive") {
+          mediaRecorder.stop();
+        }
+      } catch (err) {
+        console.warn("Forced manual stoppage on media stream because of standard encoding error:", err);
       }
       isRecording = false;
       clearInterval(recordTimer);
+      stopVisualizerAnimation();
+    }
+
+    function resetRecorderState() {
+      stopRecordingProcess();
       audioChunks = [];
       recordingDuration = 0;
       recordedBase64 = "";
