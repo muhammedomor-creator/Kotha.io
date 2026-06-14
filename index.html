@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="bn" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>কথা.io | বেনামী কণ্ঠ শেয়ারিং প্ল্যাটফর্ম</title>
+  
+  <!-- Google Fonts: Hind Siliguri for beautiful Bengali typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Hind Siliguri', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Smooth Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #020617;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col selection:bg-purple-600 selection:text-white">
+
+  <!-- CUSTOM ALERTS CONTAINER (To avoid browser alert()) -->
+  <div id="toast-container" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 w-full max-w-sm px-4"></div>
+
+  <!-- CUSTOM CONFIRMATION MODAL -->
+  <div id="confirm-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden px-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 w-full max-w-md shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+      <h3 class="text-lg font-bold text-slate-100 mb-2">আপনি কি নিশ্চিত?</h3>
+      <p id="confirm-modal-text" class="text-sm text-slate-400 mb-6">এই পোস্টটি ডিলিট করলে তা আর ফিরে পাওয়া যাবে না।</p>
+      <div class="flex justify-end gap-3">
+        <button id="confirm-cancel-btn" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold transition-all">বাতিল করুন</button>
+        <button id="confirm-ok-btn" class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-xs font-bold text-white transition-all">ডিলিট করুন</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header class="border-b border-slate-900 bg-slate-950/80 backdrop-blur-xl sticky top-0 z-40">
+    <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-purple-500/20">
+          <span class="text-xl font-black text-white">ক</span>
+        </div>
+        <div>
+          <h1 class="text-xl font-black bg-gradient-to-r from-purple-400 via-indigo-200 to-white bg-clip-text text-transparent">কথা.io</h1>
+          <p class="text-[10px] text-slate-400 font-medium tracking-wide">১০০% গোপন ও সুরক্ষিত প্ল্যাটফর্ম</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <div id="auth-status" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-950/40 border border-purple-800/40 text-xs">
+          <span class="w-2 h-2 rounded-full bg-slate-500 animate-pulse"></span>
+          <span class="font-mono text-[11px] text-purple-300">সংযোগ হচ্ছে...</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-6 md:py-8 space-y-8 pb-32">
+    
+    <!-- Hero Banner -->
+    <section class="text-center space-y-3 py-8 relative overflow-hidden rounded-3xl bg-gradient-to-b from-purple-950/10 to-transparent border border-purple-950/20">
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(147,51,234,0.05)_0%,transparent_100%)] pointer-events-none"></div>
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-950/80 text-purple-300 border border-purple-800/40 text-xs font-semibold mb-2">
+        ✨ আপনার পরিচয় সম্পূর্ণ গোপন থাকবে
+      </div>
+      <h2 class="text-2xl md:text-4xl font-extrabold text-slate-100 tracking-tight leading-snug">
+        আপনার কণ্ঠ গোপন রেখে <br/>
+        <span class="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">মনের কথা বলুন খোলামেলা!</span>
+      </h2>
+      <p class="text-xs md:text-sm text-slate-400 max-w-md mx-auto px-4">
+        এখানে কোনো ছবি নেই, কোনো নাম নেই। শুধু খাঁটি আবেগ এবং সত্য অনুভূতি। মনের লুকানো অনুভূতি শেয়ার করুন সহজে।
+      </p>
+    </section>
+
+    <!-- RECORDING DASHBOARD CARD -->
+    <section class="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800/80 rounded-3xl p-6 shadow-xl relative overflow-hidden">
+      <div class="absolute top-0 right-0 w-32 h-32 bg-purple-600/5 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute bottom-0 left-0 w-32 h-32 bg-blue-600/5 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="relative space-y-6">
+        <div class="flex items-center gap-3">
+          <span class="flex h-3 w-3 relative">
+            <span id="recording-pulse" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+            <span id="recording-dot" class="relative inline-flex rounded-full h-3 w-3 bg-purple-500"></span>
+          </span>
+          <h3 class="font-bold text-lg text-slate-100">নতুন কথা রেকর্ড করুন</h3>
+        </div>
+
+        <!-- Title Input & Categories selection -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1.5">আপনার টপিক / ক্যাপশন (ঐচ্ছিক)</label>
+            <input 
+              id="voice-title-input"
+              type="text"
+              placeholder="যেমন: মাঝরাতের নিঃসঙ্গতা..." 
+              class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-purple-500 transition-colors"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1.5 font-medium">ক্যাটাগরি বা হ্যাশট্যাগ</label>
+            <div id="category-selector" class="flex flex-wrap gap-2 max-h-24 overflow-y-auto pr-1">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Recorder UI Module -->
+        <div class="flex flex-col items-center justify-center py-6 bg-slate-950/50 rounded-2xl border border-slate-800/60">
+          
+          <div class="mb-4 text-center">
+            <span id="recorder-status-text" class="text-sm text-slate-400">সর্বোচ্চ ১ মিনিট রেকর্ড করতে পারবেন</span>
+            <div id="timer-display" class="text-2xl font-mono font-bold text-slate-300 mt-1 hidden">0:00</div>
+          </div>
+
+          <!-- Controls panel -->
+          <div class="flex items-center justify-center gap-4">
+            <!-- Start button -->
+            <button
+              id="start-record-btn"
+              class="w-16 h-16 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 text-white flex items-center justify-center shadow-lg shadow-purple-500/20 hover:scale-105 active:scale-95 transition-all"
+              title="রেকর্ড শুরু করুন"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+              </svg>
+            </button>
+
+            <!-- Stop button (hidden initially) -->
+            <button
+              id="stop-record-btn"
+              class="w-16 h-16 rounded-full bg-rose-600 text-white flex items-center justify-center shadow-lg shadow-rose-500/20 animate-pulse hover:scale-105 active:scale-95 transition-all hidden"
+              title="রেকর্ড সম্পন্ন করুন"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H10a1 1 0 01-1-1v-4z" />
+              </svg>
+            </button>
+
+            <!-- Preview & Action Box (hidden initially) -->
+            <div id="record-actions" class="flex flex-col sm:flex-row items-center gap-3 hidden">
+              <button
+                id="preview-play-btn"
+                class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition-all flex items-center gap-2 border border-slate-700/60"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                </svg>
+                <span>রেকর্ডিংটি শুনুন</span>
+              </button>
+              
+              <button
+                id="rerecord-btn"
+                class="px-4 py-2.5 rounded-xl bg-rose-950/40 text-rose-300 text-xs font-semibold hover:bg-rose-900/40 transition-all border border-rose-900/30"
+              >
+                পুনরায় রেকর্ড করুন
+              </button>
+
+              <button
+                id="publish-btn"
+                class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-500 text-white text-xs font-extrabold hover:opacity-95 shadow-lg shadow-purple-500/20 transition-all"
+              >
+                বেনামে পোস্ট করুন 🚀
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB FILTERS -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+        <div class="flex gap-1.5">
+          <button
+            id="tab-all"
+            class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all bg-purple-950/60 text-purple-300 border border-purple-800/40"
+          >
+            সব কণ্ঠস্বর
+          </button>
+          <button
+            id="tab-trending"
+            class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all text-slate-400 hover:text-slate-100 flex items-center gap-1.5"
+          >
+            🔥 ট্রেন্ডিং
+          </button>
+          <button
+            id="tab-mine"
+            class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all text-slate-400 hover:text-slate-100 flex items-center gap-1.5"
+          >
+            👤 আমার কথা
+          </button>
+        </div>
+
+        <div class="text-xs text-slate-500 font-medium">
+          মোট: <span id="voices-count" class="font-mono text-slate-300 font-bold">0টি</span> কথা
+        </div>
+      </div>
+
+      <!-- VOICE STREAM FEED -->
+      <div id="voices-feed" class="space-y-4">
+        <!-- Rendered dynamically -->
+        <div class="text-center py-16 bg-slate-900/10 rounded-3xl border border-dashed border-slate-800/60">
+          <p class="text-slate-500 text-sm">কণ্ঠস্বর লোড হচ্ছে...</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="mt-auto border-t border-slate-900 bg-slate-950/90 backdrop-blur-md py-6 text-center text-xs text-slate-600 space-y-1">
+    <p>© 2026 কথা.io — আপনার গোপনীয়তা আমাদের প্রধান অগ্রাধিকার।</p>
+    <p class="text-[10px] text-slate-700">ডিজাইন এবং ডেভেলপ করেছেন একজন এক্সপার্ট ফুল-স্ট্যাক ডেভেলপার।</p>
+  </footer>
+
+  <!-- PLATFORM BUSINESS LOGIC WITH ES MODULES -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, collection, onSnapshot, addDoc, updateDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // Standard Firebase configurations
+    const firebaseConfig = {
+      apiKey: "AIzaSyAPFNBjCZy4tp5U4_OqdboSHKhIBNeQ7-w",
+      authDomain: "kothadotio.firebaseapp.com",
+      projectId: "kothadotio",
+      storageBucket: "kothadotio.firebasestorage.app",
+      messagingSenderId: "601827197076",
+      appId: "1:601827197076:web:006dc58757c066ec40b481",
+      measurementId: "G-0Y160SRTV5"
+    };
+
+    // Firebase Initialization
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Secure App ID and Path Configuration
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'kothadotio';
+
+    // APP STATE
+    let currentUser = null;
+    let allVoices = [];
+    let currentTab = 'all'; // all, trending, personal
+    let selectedTag = 'সাধারণ আড্ডা';
+    const tagPresets = ["সাধারণ আড্ডা", "মনের কষ্ট", "ভালোবাসা", "অনুপ্রেরণা", "গোপন কথা", "গানের সুর", "মজার গল্প"];
+
+    // RECORDING STATE
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let recordTimer = null;
+    let recordingDuration = 0;
+    let recordedBase64 = "";
+    let isRecording = false;
+
+    // AUDIO PLAYBACK STATE
+    let activePlayingAudio = null;
+    let activePlayingId = null;
+
+    // Toast Notification System
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-2xl transition-all duration-300 transform scale-95 opacity-0 backdrop-blur-md border border-slate-800/80 bg-slate-900/90 w-full`;
+      
+      const indicatorColor = type === 'success' ? 'bg-emerald-500' : type === 'error' ? 'bg-rose-500' : 'bg-blue-400';
+      
+      toast.innerHTML = `
+        <div class="w-3.5 h-3.5 rounded-full ${indicatorColor}"></div>
+        <p class="text-sm font-medium text-slate-100">${message}</p>
+      `;
+
+      container.appendChild(toast);
+      
+      // Animation entry
+      setTimeout(() => {
+        toast.classList.remove('scale-95', 'opacity-0');
+        toast.classList.add('scale-100', 'opacity-100');
+      }, 50);
+
+      // Dismissal
+      setTimeout(() => {
+        toast.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    // Custom Dialog Manager
+    let confirmCallback = null;
+    function showConfirmModal(text, onConfirm) {
+      document.getElementById('confirm-modal-text').innerText = text;
+      document.getElementById('confirm-modal').classList.remove('hidden');
+      confirmCallback = onConfirm;
+    }
+
+    document.getElementById('confirm-cancel-btn').addEventListener('click', () => {
+      document.getElementById('confirm-modal').classList.add('hidden');
+      confirmCallback = null;
+    });
+
+    document.getElementById('confirm-ok-btn').addEventListener('click', () => {
+      if (confirmCallback) confirmCallback();
+      document.getElementById('confirm-modal').classList.add('hidden');
+      confirmCallback = null;
+    });
+
+    // STARTING APP - AUTHENTICATE FIRST (RULE 3)
+    const initAuth = async () => {
+      try {
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+      } catch (err) {
+        console.error("Auth Failure:", err);
+        showToast("ডাটাবেজ সংযোগে সমস্যা হয়েছে। পেজটি রিফ্রেশ করুন।", "error");
+      }
+    };
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = user;
+        const statusElement = document.getElementById('auth-status');
+        statusElement.innerHTML = `
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="font-mono text-[11px] text-purple-300">বেনামী আইডি: ${user.uid.substring(0, 8)}</span>
+        `;
+        // Auth success -> Start loading Firestore Feed
+        listenToFeed();
+      }
+    });
+
+    // READ FIRESTORE FEED (RULE 1 & 2)
+    function listenToFeed() {
+      if (!currentUser) return;
+
+      // RULE 1: Standard public path for collaborative sandbox data
+      const voicesCollection = collection(db, 'artifacts', appId, 'public', 'data', 'voices');
+
+      // RULE 2: No complicated Firestore queries. Get all, then order in JS Memory.
+      onSnapshot(voicesCollection, (snapshot) => {
+        const list = [];
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          if (!data.deleted) {
+            list.push({ id: doc.id, ...data });
+          }
+        });
+
+        // Sort in Javascript memory: newest first
+        list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        allVoices = list;
+
+        renderVoices();
+      }, (err) => {
+        console.error("Firestore listening failed:", err);
+        showToast("ডাটা লোড করতে ব্যর্থ হয়েছে।", "error");
+      });
+    }
+
+    // Dynamic Tag Rendering
+    function renderCategories() {
+      const container = document.getElementById('category-selector');
+      container.innerHTML = tagPresets.map(tag => `
+        <button
+          type="button"
+          data-tag="${tag}"
+          class="category-tag-btn px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+            selectedTag === tag 
+              ? 'bg-purple-600 text-white' 
+              : 'bg-slate-900 text-slate-300 hover:bg-slate-800'
+          }"
+        >
+          #${tag}
+        </button>
+      `).join('');
+
+      // Add click events to newly created tags
+      document.querySelectorAll('.category-tag-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          selectedTag = e.currentTarget.dataset.tag;
+          renderCategories();
+        });
+      });
+    }
+
+    // Dynamic Voices Feed Renderer
+    function renderVoices() {
+      const feedContainer = document.getElementById('voices-feed');
+      const counterElement = document.getElementById('voices-count');
+
+      // Filter based on selected tabs
+      const filtered = allVoices.filter(v => {
+        if (currentTab === 'personal') {
+          return v.creatorId === currentUser?.uid;
+        }
+        if (currentTab === 'trending') {
+          return v.likes >= 2; // Filter standard
+        }
+        return true;
+      });
+
+      counterElement.innerText = `${filtered.length}টি`;
+
+      if (filtered.length === 0) {
+        feedContainer.innerHTML = `
+          <div class="text-center py-16 bg-slate-900/10 rounded-3xl border border-dashed border-slate-800/60">
+            <p class="text-slate-500 text-sm">এই ক্যাটাগরিতে এখনো কোনো কণ্ঠস্বর পাওয়া যায়নি।</p>
+            <p class="text-[11px] text-slate-600 mt-1">প্রথম কণ্ঠস্বরটি রেকর্ড করে আপনিই শুরু করতে পারেন!</p>
+          </div>
+        `;
+        return;
+      }
+
+      feedContainer.innerHTML = filtered.map(v => {
+        const isLiked = v.likedBy?.includes(currentUser?.uid);
+        const isOwnPost = v.creatorId === currentUser?.uid;
+        const timeStr = new Date(v.createdAt).toLocaleTimeString('bn-BD', { hour: '2-digit', minute: '2-digit' });
+        const dateStr = new Date(v.createdAt).toLocaleDateString('bn-BD', { month: 'short', day: 'numeric' });
+
+        return `
+          <article class="p-5 rounded-2xl bg-slate-900/40 border border-slate-900 hover:border-slate-800/60 transition-all duration-200 relative group">
+            
+            <!-- Card Header -->
+            <div class="flex items-start justify-between gap-4 mb-3">
+              <div>
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-950 text-purple-400 border border-purple-900/30">
+                    #${v.tag}
+                  </span>
+                  <span class="text-[11px] text-slate-500">${dateStr} | ${timeStr}</span>
+                </div>
+                <h4 class="text-base font-bold text-slate-100">${v.title || "বেনামী কণ্ঠ"}</h4>
+              </div>
+
+              <div class="flex items-center gap-1">
+                ${isOwnPost ? `
+                  <button
+                    data-id="${v.id}"
+                    class="delete-voice-btn p-1.5 text-slate-500 hover:text-rose-400 hover:bg-rose-950/20 rounded-lg transition-all"
+                    title="মুছে ফেলুন"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                ` : ''}
+                <button
+                  data-id="${v.id}"
+                  class="share-voice-btn p-1.5 text-slate-500 hover:text-indigo-400 hover:bg-indigo-950/20 rounded-lg transition-all"
+                  title="শেয়ার করুন"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 10.742l4.633-2.316a3 3 0 11.424 1.898l-4.633 2.316a3 3 0 11-.424-1.898zm0 0a3 3 0 110 2.516" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Integrated Audio Player Bar -->
+            <div class="py-3 px-4 bg-slate-950/60 rounded-xl border border-slate-900 flex items-center justify-between gap-4">
+              <div class="flex items-center gap-3">
+                <button
+                  data-id="${v.id}"
+                  data-audio="${v.audioData}"
+                  class="play-toggle-btn w-11 h-11 rounded-full flex items-center justify-center transition-all ${
+                    activePlayingId === v.id 
+                      ? 'bg-rose-600 text-white shadow-md shadow-rose-600/20' 
+                      : 'bg-purple-600 text-white shadow-md shadow-purple-600/20'
+                  }"
+                >
+                  ${activePlayingId === v.id ? `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                  ` : `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                    </svg>
+                  `}
+                </button>
+                <div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-xs text-slate-300 font-semibold font-mono">${formatDuration(v.duration)}</span>
+                    <span class="text-[10px] text-slate-500">সেকেন্ড</span>
+                  </div>
+                  <span class="text-[9px] text-purple-400 tracking-wider">
+                    ${activePlayingId === v.id ? "চলছে..." : "শুনতে প্লে বোতাম চাপুন"}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Animated Visualizer Pulse Bars -->
+              ${activePlayingId === v.id ? `
+                <div class="flex items-end gap-1 h-5 pr-2">
+                  <div class="w-[3px] bg-rose-500 animate-[bounce_0.8s_infinite_100ms] rounded-full h-4"></div>
+                  <div class="w-[3px] bg-rose-400 animate-[bounce_0.8s_infinite_300ms] rounded-full h-3"></div>
+                  <div class="w-[3px] bg-rose-500 animate-[bounce_0.8s_infinite_200ms] rounded-full h-5"></div>
+                  <div class="w-[3px] bg-rose-400 animate-[bounce_0.8s_infinite_400ms] rounded-full h-2"></div>
+                </div>
+              ` : ''}
+            </div>
+
+            <!-- Interactivity Actions panel -->
+            <div class="flex items-center gap-4 mt-4 pt-3 border-t border-slate-900 text-slate-400 text-xs">
+              <button 
+                data-id="${v.id}"
+                data-likes="${encodeURIComponent(JSON.stringify(v.likedBy || []))}"
+                class="like-btn flex items-center gap-1.5 py-1 px-2.5 rounded-lg transition-all ${
+                  isLiked ? 'text-rose-500 bg-rose-950/20 font-bold' : 'hover:text-rose-400 hover:bg-slate-850'
+                }"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="${isLiked ? 'currentColor' : 'none'}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+                <span>পছন্দ (${v.likes || 0})</span>
+              </button>
+
+              <button 
+                data-id="${v.id}"
+                class="reply-toggle-trigger flex items-center gap-1.5 py-1 px-2.5 rounded-lg hover:text-purple-400 hover:bg-slate-850 transition-all"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+                <span>মন্তব্য (${v.replies?.length || 0})</span>
+              </button>
+            </div>
+
+            <!-- COLLAPSED REPLY/COMMENT BOX -->
+            <div id="replies-box-${v.id}" class="mt-4 pt-4 border-t border-slate-900 space-y-3 hidden">
+              <h5 class="text-xs font-bold text-slate-400">বেনামী মন্তব্যসমূহ</h5>
+              
+              <!-- Reply list -->
+              <div class="space-y-2 max-h-36 overflow-y-auto pr-1">
+                ${v.replies && v.replies.length > 0 ? v.replies.map(reply => `
+                  <div class="p-2.5 bg-slate-950/40 rounded-xl border border-slate-900">
+                    <div class="flex items-center justify-between text-[9px] text-slate-500 mb-1">
+                      <span>👤 বেনামী ব্যবহারকারী</span>
+                      <span>${new Date(reply.createdAt).toLocaleTimeString('bn-BD', { hour: '2-digit', minute: '2-digit' })}</span>
+                    </div>
+                    <p class="text-xs text-slate-300">${reply.text}</p>
+                  </div>
+                `).join('') : `
+                  <p class="text-[11px] text-slate-600 text-center py-2">এখনো কোনো মন্তব্য নেই।</p>
+                `}
+              </div>
+
+              <!-- Reply entry form -->
+              <div class="flex gap-2">
+                <input 
+                  id="reply-input-${v.id}"
+                  type="text" 
+                  placeholder="আপনার বেনামী মন্তব্য লিখুন..." 
+                  class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-purple-600"
+                />
+                <button
+                  data-id="${v.id}"
+                  class="submit-reply-btn px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl transition-all"
+                >
+                  মন্তব্য দিন
+                </button>
+              </div>
+            </div>
+
+          </article>
+        `;
+      }).join('');
+
+      attachVoiceInteractions();
+    }
+
+    // Attach Javascript Listeners to Dynamic Feed elements
+    function attachVoiceInteractions() {
+      // 1. Play/Pause handler
+      document.querySelectorAll('.play-toggle-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const id = e.currentTarget.dataset.id;
+          const base64Data = e.currentTarget.dataset.audio;
+          toggleAudioPlayback(id, base64Data);
+        });
+      });
+
+      // 2. Like/Dislike action
+      document.querySelectorAll('.like-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const id = e.currentTarget.dataset.id;
+          const likedBy = JSON.parse(decodeURIComponent(e.currentTarget.dataset.likes));
+          await handleLikeAction(id, likedBy);
+        });
+      });
+
+      // 3. Share action
+      document.querySelectorAll('.share-voice-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const id = e.currentTarget.dataset.id;
+          const shareUrl = `${window.location.origin}?voice=${id}`;
+          
+          // Secure clipboard copy
+          const tempInput = document.createElement("input");
+          tempInput.value = shareUrl;
+          document.body.appendChild(tempInput);
+          tempInput.select();
+          document.execCommand("copy");
+          document.body.removeChild(tempInput);
+
+          showToast("শেয়ার লিঙ্কটি ক্লিপবোর্ডে কপি করা হয়েছে! 🔗");
+        });
+      });
+
+      // 4. Toggle replies block visibility
+      document.querySelectorAll('.reply-toggle-trigger').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const id = e.currentTarget.dataset.id;
+          const repliesBox = document.getElementById(`replies-box-${id}`);
+          repliesBox.classList.toggle('hidden');
+        });
+      });
+
+      // 5. Submit reply
+      document.querySelectorAll('.submit-reply-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const id = e.currentTarget.dataset.id;
+          const input = document.getElementById(`reply-input-${id}`);
+          const text = input.value.trim();
+          if (!text) {
+            showToast("মন্তব্য খালি রাখা যাবে না।", "error");
+            return;
+          }
+          await handleReplySubmission(id, text);
+          input.value = "";
+        });
+      });
+
+      // 6. Delete post securely
+      document.querySelectorAll('.delete-voice-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const id = e.currentTarget.dataset.id;
+          showConfirmModal("আপনি কি নিশ্চিতভাবে আপনার এই পোস্টটি মুছে ফেলতে চান?", async () => {
+            try {
+              const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'voices', id);
+              await updateDoc(docRef, {
+                audioData: "", 
+                deleted: true
+              });
+              showToast("আপনার কথাটি ডিলিট করা হয়েছে।", "success");
+            } catch (err) {
+              console.error("Delete Action Error:", err);
+              showToast("ডিলিট করা যায়নি।", "error");
+            }
+          });
+        });
+      });
+    }
+
+    // Audio Playback Controller
+    function toggleAudioPlayback(id, base64Data) {
+      if (activePlayingId === id) {
+        // Already playing this audio, pause it
+        if (activePlayingAudio) {
+          activePlayingAudio.pause();
+        }
+        activePlayingId = null;
+        activePlayingAudio = null;
+        renderVoices();
+      } else {
+        // If another is active, pause it first
+        if (activePlayingAudio) {
+          activePlayingAudio.pause();
+        }
+        
+        try {
+          activePlayingAudio = new Audio(base64Data);
+          activePlayingId = id;
+          renderVoices();
+
+          activePlayingAudio.play()
+            .catch(err => {
+              console.error(err);
+              showToast("অডিও চালু করতে ব্যর্থ হয়েছে।", "error");
+              activePlayingId = null;
+              activePlayingAudio = null;
+              renderVoices();
+            });
+
+          activePlayingAudio.addEventListener('ended', () => {
+            activePlayingId = null;
+            activePlayingAudio = null;
+            renderVoices();
+          });
+        } catch (e) {
+          console.error("Audio Load Error:", e);
+          showToast("অডিও চালু করা যায়নি।", "error");
+        }
+      }
+    }
+
+    // Like handler
+    async function handleLikeAction(id, likedByArray) {
+      if (!currentUser) return;
+      const hasLiked = likedByArray.includes(currentUser.uid);
+      const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'voices', id);
+
+      try {
+        if (hasLiked) {
+          const updatedList = likedByArray.filter(uid => uid !== currentUser.uid);
+          await updateDoc(docRef, {
+            likedBy: updatedList,
+            likes: increment(-1)
+          });
+          showToast("পছন্দ প্রত্যাহার করা হয়েছে।", "info");
+        } else {
+          await updateDoc(docRef, {
+            likedBy: arrayUnion(currentUser.uid),
+            likes: increment(1)
+          });
+          showToast("আপনি ভালোবাসার রিয়্যাক্ট জানিয়েছেন! ❤️");
+        }
+      } catch (e) {
+        console.error("Like Action Error:", e);
+      }
+    }
+
+    // Reply submitter handler
+    async function handleReplySubmission(voiceId, text) {
+      if (!currentUser) return;
+      const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'voices', voiceId);
+      const newReply = {
+        id: crypto.randomUUID(),
+        userId: currentUser.uid,
+        text: text,
+        createdAt: Date.now()
+      };
+
+      try {
+        await updateDoc(docRef, {
+          replies: arrayUnion(newReply)
+        });
+        showToast("আপনার বেনামী মন্তব্য সফলভাবে যুক্ত হয়েছে।");
+      } catch (err) {
+        console.error("Reply database addition error:", err);
+        showToast("মন্তব্য সংরক্ষণ ব্যর্থ হয়েছে।", "error");
+      }
+    }
+
+    // Recording Controllers (Audio Capture engine)
+    async function initRecorder() {
+      try {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          showToast("আপনার ডিভাইসে মাইক্রোফোন সুবিধা কাজ করছে না।", "error");
+          return;
+        }
+
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+
+        mediaRecorder.ondataavailable = (e) => {
+          if (e.data.size > 0) audioChunks.push(e.data);
+        };
+
+        mediaRecorder.onstop = () => {
+          const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+          const reader = new FileReader();
+          reader.readAsDataURL(audioBlob);
+          reader.onloadend = () => {
+            recordedBase64 = reader.result;
+            showToast("রেকর্ডিং সম্পন্ন হয়েছে!", "success");
+            
+            // Switch layout to preview mode
+            document.getElementById('start-record-btn').classList.add('hidden');
+            document.getElementById('stop-record-btn').classList.add('hidden');
+            document.getElementById('record-actions').classList.remove('hidden');
+            document.getElementById('recorder-status-text').innerHTML = `
+              <span class="text-xs text-emerald-400 flex items-center justify-center gap-1 font-medium">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> অডিও প্রস্তুত হয়েছে
+              </span>`;
+          };
+          
+          // Stop capturing tracks to free microphone icon indicator
+          stream.getTracks().forEach(track => track.stop());
+        };
+
+        mediaRecorder.start();
+        isRecording = true;
+        
+        // Timer display setup
+        recordingDuration = 0;
+        document.getElementById('timer-display').classList.remove('hidden');
+        document.getElementById('timer-display').innerText = formatDuration(0);
+        document.getElementById('start-record-btn').classList.add('hidden');
+        document.getElementById('stop-record-btn').classList.remove('hidden');
+        document.getElementById('recorder-status-text').innerText = "আপনার কণ্ঠ রেকর্ড হচ্ছে...";
+
+        recordTimer = setInterval(() => {
+          recordingDuration++;
+          document.getElementById('timer-display').innerText = formatDuration(recordingDuration);
+          
+          if (recordingDuration >= 60) {
+            stopRecordingProcess();
+            showToast("সর্বোচ্চ সময় ১ মিনিট পূর্ণ হয়েছে।", "info");
+          }
+        }, 1000);
+
+      } catch (err) {
+        console.error("Recording initialization failed:", err);
+        showToast("মাইক্রোফোন চালু করা যায়নি। দয়া করে পারমিশন চেক করুন।", "error");
+      }
+    }
+
+    function stopRecordingProcess() {
+      if (mediaRecorder && isRecording) {
+        mediaRecorder.stop();
+        isRecording = false;
+        clearInterval(recordTimer);
+      }
+    }
+
+    function resetRecorderState() {
+      if (mediaRecorder && isRecording) {
+        mediaRecorder.stop();
+      }
+      isRecording = false;
+      clearInterval(recordTimer);
+      audioChunks = [];
+      recordingDuration = 0;
+      recordedBase64 = "";
+
+      // Back to default styling
+      document.getElementById('timer-display').classList.add('hidden');
+      document.getElementById('start-record-btn').classList.remove('hidden');
+      document.getElementById('stop-record-btn').classList.add('hidden');
+      document.getElementById('record-actions').classList.add('hidden');
+      document.getElementById('recorder-status-text').innerText = "সর্বোচ্চ ১ মিনিট রেকর্ড করতে পারবেন";
+      document.getElementById('voice-title-input').value = "";
+    }
+
+    // Publish Voice to Firestore
+    async function publishVoice() {
+      if (!recordedBase64) {
+        showToast("কোনো রেকর্ডিং ফাইল পাওয়া যায়নি।", "error");
+        return;
+      }
+
+      const inputTitle = document.getElementById('voice-title-input').value.trim();
+      const title = inputTitle || "বেনামী কণ্ঠ";
+
+      try {
+        const voicesCollection = collection(db, 'artifacts', appId, 'public', 'data', 'voices');
+        await addDoc(voicesCollection, {
+          title,
+          tag: selectedTag,
+          audioData: recordedBase64,
+          duration: recordingDuration,
+          creatorId: currentUser.uid,
+          likes: 0,
+          likedBy: [],
+          replies: [],
+          createdAt: Date.now()
+        });
+
+        showToast("আপনার কথাটি সফলভাবে বেনামে প্রকাশ করা হয়েছে! 🎉");
+        resetRecorderState();
+      } catch (err) {
+        console.error("Publishing error:", err);
+        showToast("প্রকাশ করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।", "error");
+      }
+    }
+
+    // Helper: format duration (seconds) -> e.g. "0:45"
+    function formatDuration(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    }
+
+    // Trigger Play/Pause preview of recorded audio
+    let previewAudioInstance = null;
+    function handlePreviewPlayback() {
+      if (!recordedBase64) return;
+
+      if (previewAudioInstance && !previewAudioInstance.paused) {
+        previewAudioInstance.pause();
+        document.getElementById('preview-play-btn').innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+          </svg>
+          <span>রেকর্ডিংটি শুনুন</span>
+        `;
+      } else {
+        previewAudioInstance = new Audio(recordedBase64);
+        previewAudioInstance.play();
+        document.getElementById('preview-play-btn').innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+          </svg>
+          <span>প্লে থামান</span>
+        `;
+
+        previewAudioInstance.addEventListener('ended', () => {
+          document.getElementById('preview-play-btn').innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+            </svg>
+            <span>রেকর্ডিংটি শুনুন</span>
+          `;
+        });
+      }
+    }
+
+    // TABS CONTROL LOGIC
+    function switchTab(tabId, tabElement) {
+      currentTab = tabId;
+      document.querySelectorAll('#tab-all, #tab-trending, #tab-mine').forEach(btn => {
+        btn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all text-slate-400 hover:text-slate-100 flex items-center gap-1.5";
+      });
+      tabElement.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all bg-purple-950/60 text-purple-300 border border-purple-800/40 flex items-center gap-1.5";
+      renderVoices();
+    }
+
+    // EVENT LISTENERS REGISTER
+    document.getElementById('start-record-btn').addEventListener('click', initRecorder);
+    document.getElementById('stop-record-btn').addEventListener('click', stopRecordingProcess);
+    document.getElementById('rerecord-btn').addEventListener('click', resetRecorderState);
+    document.getElementById('preview-play-btn').addEventListener('click', handlePreviewPlayback);
+    document.getElementById('publish-btn').addEventListener('click', publishVoice);
+
+    document.getElementById('tab-all').addEventListener('click', (e) => switchTab('all', e.currentTarget));
+    document.getElementById('tab-trending').addEventListener('click', (e) => switchTab('trending', e.currentTarget));
+    document.getElementById('tab-mine').addEventListener('click', (e) => switchTab('personal', e.currentTarget));
+
+    // ON DOM LOAD INITIALIZATIONS
+    window.onload = () => {
+      initAuth();
+      renderCategories();
+    };
+
+  </script>
+</body>
+</html>
