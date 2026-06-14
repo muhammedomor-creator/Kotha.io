@@ -215,6 +215,36 @@
             <div id="timer-display" class="text-2xl font-mono font-bold text-slate-300 mt-1 hidden">0:00</div>
           </div>
 
+          <!-- Voice Changer Options (Visible after recording stops) -->
+          <div id="voice-changer-section" class="w-full max-w-lg px-6 mb-6 py-4 bg-slate-900/60 border border-slate-800/80 rounded-2xl text-center hidden">
+            <span class="block text-xs font-bold text-purple-400 mb-2.5">🎭 ভয়েস পরিবর্তন করুন (ঐচ্ছিক):</span>
+            <div class="flex flex-wrap justify-center gap-1.5">
+              <button type="button" data-effect="normal" class="voice-effect-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition-all bg-purple-600 text-white border border-purple-500">
+                🎙️ সাধারণ কণ্ঠ
+              </button>
+              <button type="button" data-effect="child" class="voice-effect-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition-all bg-slate-950 text-slate-400 hover:text-slate-200 border border-slate-850">
+                👶 শিশু
+              </button>
+              <button type="button" data-effect="chipmunk" class="voice-effect-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition-all bg-slate-950 text-slate-400 hover:text-slate-200 border border-slate-850">
+                🐿️ মটু পাতলু
+              </button>
+              <button type="button" data-effect="deep" class="voice-effect-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition-all bg-slate-950 text-slate-400 hover:text-slate-200 border border-slate-850">
+                🦁 গম্ভীর
+              </button>
+              <button type="button" data-effect="robot" class="voice-effect-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition-all bg-slate-950 text-slate-400 hover:text-slate-200 border border-slate-850">
+                🤖 রোবট
+              </button>
+              <button type="button" data-effect="echo" class="voice-effect-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition-all bg-slate-950 text-slate-400 hover:text-slate-200 border border-slate-850">
+                🏔️ ইকো / গুহা
+              </button>
+            </div>
+            
+            <div id="voice-processing-loader" class="text-[11px] text-purple-300 flex items-center justify-center gap-1.5 mt-3 hidden">
+              <span class="w-3 h-3 rounded-full border-2 border-purple-500 border-t-transparent animate-spin"></span>
+              <span>ভয়েস পরিবর্তন হচ্ছে... অনুগ্রহ করে অপেক্ষা করুন।</span>
+            </div>
+          </div>
+
           <!-- Controls panel -->
           <div class="flex items-center justify-center gap-4">
             <!-- Start button -->
@@ -362,7 +392,9 @@
     let audioChunks = [];
     let recordTimer = null;
     let recordingDuration = 0;
-    let recordedBase64 = "";
+    let recordedBase64 = ""; // Original Raw Base64
+    let currentProcessedBase64 = ""; // Base64 with applied voice changer effects
+    let selectedEffect = "normal"; // Default active effect
     let isRecording = false;
 
     // AUDIO PLAYBACK STATE
@@ -1116,7 +1148,211 @@
       }
     }
 
-    // Recording Controllers (Audio Capture engine)
+    // -----------------------------------------------------------------
+    // VOICE CHANGER AUDIO ENGINE (Web Audio API and WAV Encoder)
+    // -----------------------------------------------------------------
+    
+    // Converts an AudioBuffer into raw WAV Blob
+    function bufferToWav(buffer) {
+      let numOfChan = buffer.numberOfChannels,
+          length = buffer.length * numOfChan * 2 + 44,
+          bufferArr = new ArrayBuffer(length),
+          view = new DataView(bufferArr),
+          channels = [], i, sample,
+          offset = 0,
+          pos = 0;
+
+      // write WAV header
+      setUint32(0x46464952);                         // "RIFF"
+      setUint32(length - 8);                         // file length - 8
+      setUint32(0x45564157);                         // "WAVE"
+      setUint32(0x20746d66);                         // "fmt " chunk
+      setUint32(16);                                 // chunk length
+      setUint16(1);                                  // sample format (raw)
+      setUint16(numOfChan);
+      setUint32(buffer.sampleRate);
+      setUint32(buffer.sampleRate * 2 * numOfChan);  // byte rate
+      setUint16(numOfChan * 2);                      // block align
+      setUint16(16);                                 // bits per sample
+      setUint32(0x61746164);                         // "data" - chunk
+      setUint32(length - pos - 4);                   // chunk length
+
+      for (i = 0; i < buffer.numberOfChannels; i++)
+        channels.push(buffer.getChannelData(i));
+
+      while (pos < length) {
+        for (i = 0; i < numOfChan; i++) {             // interleave channels
+          sample = Math.max(-1, Math.min(1, channels[i][offset])); // clamp
+          sample = (sample < 0 ? sample * 0x8000 : sample * 0x7FFF); // scale to 16-bit signed int
+          view.setInt16(pos, sample, true);          // write 16-bit sample
+          pos += 2;
+        }
+        offset++;
+      }
+
+      return new Blob([bufferArr], { type: "audio/wav" });
+
+      function setUint16(data) {
+        view.setUint16(pos, data, true);
+        pos += 2;
+      }
+
+      function setUint32(data) {
+        view.setUint32(pos, data, true);
+        pos += 4;
+      }
+    }
+
+    // Processes the recorded audio through Offline Audio Graph to apply effects
+    async function renderAudioWithEffect(base64Data, effectType) {
+      if (effectType === 'normal') return base64Data;
+      
+      // Decode base64 to ArrayBuffer
+      const response = await fetch(base64Data);
+      const arrayBuf = await response.arrayBuffer();
+      
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const decodedBuffer = await audioCtx.decodeAudioData(arrayBuf);
+      
+      // Duration adjustments based on playbackRate
+      let durationMultiplier = 1.0;
+      if (effectType === 'chipmunk') durationMultiplier = 0.7;
+      else if (effectType === 'child') durationMultiplier = 0.8;
+      else if (effectType === 'deep') durationMultiplier = 1.3;
+
+      const targetSampleRate = decodedBuffer.sampleRate;
+      const targetLength = Math.floor(decodedBuffer.length * durationMultiplier);
+
+      // Create Offline Audio Context for rapid background processing
+      const offlineCtx = new OfflineAudioContext(
+        decodedBuffer.numberOfChannels,
+        targetLength,
+        targetSampleRate
+      );
+      
+      const source = offlineCtx.createBufferSource();
+      source.buffer = decodedBuffer;
+      
+      let lastNode = source;
+      
+      // APPLY EFFECT NODES
+      if (effectType === 'chipmunk') {
+        // High pitch, High speed
+        source.playbackRate.value = 1.45;
+      } 
+      else if (effectType === 'child') {
+        // Soft cute kid voice: higher playback rate + bandpass filter to boost clarity
+        source.playbackRate.value = 1.25;
+        const bqp = offlineCtx.createBiquadFilter();
+        bqp.type = 'highpass';
+        bqp.frequency.value = 180;
+        source.connect(bqp);
+        lastNode = bqp;
+      } 
+      else if (effectType === 'deep') {
+        // Slow playback rate for extreme deep tone
+        source.playbackRate.value = 0.78;
+      } 
+      else if (effectType === 'robot') {
+        // Metallic Robot Voice: feedback delay comb filter
+        const delay = offlineCtx.createDelay();
+        delay.delayTime.value = 0.012; // 12ms metallic comb
+        
+        const feedback = offlineCtx.createGain();
+        feedback.gain.value = 0.55;
+        
+        source.connect(delay);
+        delay.connect(feedback);
+        feedback.connect(delay);
+        
+        const filter = offlineCtx.createBiquadFilter();
+        filter.type = 'peaking';
+        filter.frequency.value = 1000;
+        filter.Q.value = 2;
+        filter.gain.value = 4;
+
+        source.connect(filter);
+        delay.connect(filter);
+        lastNode = filter;
+      } 
+      else if (effectType === 'echo') {
+        // Cave echo effect
+        const delay = offlineCtx.createDelay();
+        delay.delayTime.value = 0.25; // 250ms echo delay
+        
+        const feedback = offlineCtx.createGain();
+        feedback.gain.value = 0.35;
+        
+        source.connect(delay);
+        delay.connect(feedback);
+        feedback.connect(delay);
+        
+        const merger = offlineCtx.createGain();
+        source.connect(merger);
+        delay.connect(merger);
+        lastNode = merger;
+      }
+      
+      lastNode.connect(offlineCtx.destination);
+      source.start(0);
+      
+      // Render buffer and convert back to WAV
+      const renderedBuffer = await offlineCtx.startRendering();
+      const wavBlob = bufferToWav(renderedBuffer);
+      
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(wavBlob);
+      });
+    }
+
+    // Voice Changer Selector Button Events
+    function initVoiceChangerUI() {
+      const effectButtons = document.querySelectorAll('.voice-effect-btn');
+      const loader = document.getElementById('voice-processing-loader');
+
+      effectButtons.forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const effect = e.currentTarget.dataset.effect;
+          if (effect === selectedEffect || isRecording) return;
+
+          // Disable buttons temporarily
+          effectButtons.forEach(b => b.disabled = true);
+          loader.classList.remove('hidden');
+
+          try {
+            selectedEffect = effect;
+            
+            // Render Voice Change base64
+            currentProcessedBase64 = await renderAudioWithEffect(recordedBase64, effect);
+            
+            // Adjust visual state of selected effect button
+            effectButtons.forEach(b => {
+              if (b.dataset.effect === effect) {
+                b.className = "voice-effect-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition-all bg-purple-600 text-white border border-purple-500";
+              } else {
+                b.className = "voice-effect-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition-all bg-slate-950 text-slate-400 hover:text-slate-200 border border-slate-850";
+              }
+            });
+
+            showToast("ভয়েস পরিবর্তন সফল হয়েছে!", "success");
+          } catch (err) {
+            console.error("Voice conversion error:", err);
+            showToast("ভয়েস পরিবর্তন করা সম্ভব হয়নি।", "error");
+            selectedEffect = 'normal';
+            currentProcessedBase64 = recordedBase64;
+          } finally {
+            effectButtons.forEach(b => b.disabled = false);
+            loader.classList.add('hidden');
+          }
+        });
+      });
+    }
+
+    // -----------------------------------------------------------------
+    // RECORDING CONTROL ENGINE
+    // -----------------------------------------------------------------
     async function initRecorder() {
       try {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -1138,12 +1374,26 @@
           reader.readAsDataURL(audioBlob);
           reader.onloadend = () => {
             recordedBase64 = reader.result;
+            currentProcessedBase64 = recordedBase64; // default processed audio is raw
+            selectedEffect = 'normal';
+
             showToast("রেকর্ডিং সম্পন্ন হয়েছে!", "success");
             
             // Switch layout to preview mode
             document.getElementById('start-record-btn').classList.add('hidden');
             document.getElementById('stop-record-btn').classList.add('hidden');
             document.getElementById('record-actions').classList.remove('hidden');
+            document.getElementById('voice-changer-section').classList.remove('hidden');
+
+            // Reset Effect Selection UI
+            document.querySelectorAll('.voice-effect-btn').forEach(b => {
+              if (b.dataset.effect === 'normal') {
+                b.className = "voice-effect-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition-all bg-purple-600 text-white border border-purple-500";
+              } else {
+                b.className = "voice-effect-btn px-3 py-1.5 rounded-xl text-xs font-semibold transition-all bg-slate-950 text-slate-400 hover:text-slate-200 border border-slate-850";
+              }
+            });
+
             document.getElementById('recorder-status-text').innerHTML = `
               <span class="text-xs text-emerald-400 flex items-center justify-center gap-1 font-medium">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> অডিও প্রস্তুত হয়েছে
@@ -1200,12 +1450,15 @@
       audioChunks = [];
       recordingDuration = 0;
       recordedBase64 = "";
+      currentProcessedBase64 = "";
+      selectedEffect = "normal";
 
       // Back to default styling
       document.getElementById('timer-display').classList.add('hidden');
       document.getElementById('start-record-btn').classList.remove('hidden');
       document.getElementById('stop-record-btn').classList.add('hidden');
       document.getElementById('record-actions').classList.add('hidden');
+      document.getElementById('voice-changer-section').classList.add('hidden');
       
       const recorderStatus = document.getElementById('recorder-status-text');
       if (isAdmin) {
@@ -1219,7 +1472,7 @@
 
     // Publish Voice to Firestore
     async function publishVoice() {
-      if (!recordedBase64) {
+      if (!currentProcessedBase64) {
         showToast("কোনো রেকর্ডিং ফাইল পাওয়া যায়নি।", "error");
         return;
       }
@@ -1227,13 +1480,19 @@
       const inputTitle = document.getElementById('voice-title-input').value.trim();
       const title = inputTitle || "বেনামী কণ্ঠ";
 
+      // Calculate relative duration based on playback speed modifications
+      let modifiedDuration = recordingDuration;
+      if (selectedEffect === 'chipmunk') modifiedDuration = Math.ceil(recordingDuration / 1.45);
+      else if (selectedEffect === 'child') modifiedDuration = Math.ceil(recordingDuration / 1.25);
+      else if (selectedEffect === 'deep') modifiedDuration = Math.ceil(recordingDuration / 0.78);
+
       try {
         const voicesCollection = collection(db, 'artifacts', appId, 'public', 'data', 'voices');
         await addDoc(voicesCollection, {
           title,
           tag: selectedTag,
-          audioData: recordedBase64,
-          duration: recordingDuration,
+          audioData: currentProcessedBase64, // Uploading the processed voice changer output!
+          duration: modifiedDuration,
           creatorId: currentUser.uid,
           likes: 0,
           likedBy: [],
@@ -1258,10 +1517,10 @@
       return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
     }
 
-    // Trigger Play/Pause preview of recorded audio
+    // Trigger Play/Pause preview of recorded audio (plays currentProcessedBase64)
     let previewAudioInstance = null;
     function handlePreviewPlayback() {
-      if (!recordedBase64) return;
+      if (!currentProcessedBase64) return;
 
       if (previewAudioInstance && !previewAudioInstance.paused) {
         previewAudioInstance.pause();
@@ -1272,7 +1531,7 @@
           <span>রেকর্ডিংটি শুনুন</span>
         `;
       } else {
-        previewAudioInstance = new Audio(recordedBase64);
+        previewAudioInstance = new Audio(currentProcessedBase64);
         previewAudioInstance.play();
         document.getElementById('preview-play-btn').innerHTML = `
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -1318,6 +1577,7 @@
     window.onload = () => {
       initAuth();
       renderCategories();
+      initVoiceChangerUI();
     };
 
   </script>
