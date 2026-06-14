@@ -44,14 +44,14 @@
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col selection:bg-purple-600 selection:text-white">
 
-  <!-- CUSTOM ALERTS CONTAINER -->
+  <!-- CUSTOM ALERTS CONTAINER (To avoid browser alert()) -->
   <div id="toast-container" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 w-full max-w-sm px-4"></div>
 
   <!-- CUSTOM CONFIRMATION MODAL -->
   <div id="confirm-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden px-4">
     <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 w-full max-w-md shadow-2xl animate-in fade-in zoom-in-95 duration-200">
       <h3 id="confirm-modal-title" class="text-lg font-bold text-slate-100 mb-2">আপনি কি নিশ্চিত?</h3>
-      <p id="confirm-modal-text" class="text-sm text-slate-400 mb-6">এই কাজটি আর ফিরিয়ে নেওয়া যাবে না।</p>
+      <p id="confirm-modal-text" class="text-sm text-slate-400 mb-6">এই পোস্টটি ডিলিট করলে তা আর ফিরে পাওয়া যাবে না।</p>
       <div class="flex justify-end gap-3">
         <button id="confirm-cancel-btn" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold transition-all">বাতিল করুন</button>
         <button id="confirm-ok-btn" class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-xs font-bold text-white transition-all">নিশ্চিত করুন</button>
@@ -63,13 +63,13 @@
   <div id="admin-login-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden px-4">
     <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 w-full max-w-md shadow-2xl animate-in fade-in zoom-in-95 duration-200">
       <h3 class="text-lg font-bold text-slate-100 mb-2">মাস্টার এডমিন অ্যাক্সেস 🔑</h3>
-      <p class="text-xs text-slate-400 mb-4">কথা.io মডারেশন সিস্টেমে প্রবেশ করতে গোপন সিকিউরিটি পাসওয়ার্ডটি দিন।</p>
+      <p class="text-xs text-slate-400 mb-4">কথা.io মডারেশন সিস্টেমে প্রবেশ করতে গোপন ফায়ারবেস সিকিউরিটি পাসওয়ার্ডটি দিন।</p>
       
       <div class="space-y-4 mb-6">
         <input 
           id="admin-password-input" 
           type="password" 
-          placeholder="পাসওয়ার্ড লিখুন..." 
+          placeholder="গোপন পাসওয়ার্ড লিখুন..." 
           class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-purple-500 transition-colors"
         >
       </div>
@@ -123,23 +123,35 @@
       </p>
     </section>
 
-    <!-- ADMIN CONTEXT REPORT SUMMARY (Visible only when admin logged in) -->
+    <!-- ADMIN REPORT SUMMARY (Visible only when admin logged in) -->
     <section id="admin-report-summary" class="hidden bg-gradient-to-br from-rose-950/20 to-slate-950 border border-rose-900/30 rounded-3xl p-6 shadow-xl relative overflow-hidden">
       <div class="absolute top-0 right-0 w-32 h-32 bg-rose-600/5 rounded-full blur-3xl pointer-events-none"></div>
-      <div class="relative space-y-3">
+      <div class="relative space-y-4">
         <div class="flex items-center justify-between border-b border-rose-900/20 pb-2">
-          <h3 class="font-extrabold text-base text-rose-400">🚨 রিপোর্ট করা পোস্টসমূহ (এডমিন ভিউ)</h3>
+          <h3 class="font-extrabold text-base text-rose-400 flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
+            <span>🚨 এডমিন মডারেশন ও রিপোর্ট ড্যাশবোর্ড</span>
+          </h3>
           <button id="admin-logout-btn" class="px-2.5 py-1 rounded-lg bg-rose-900/20 hover:bg-rose-900/40 text-rose-300 text-[10px] font-bold transition-all">এডমিন মোড বন্ধ করুন</button>
         </div>
-        <p class="text-xs text-slate-400">নিচে প্ল্যাটফর্মে রিপোর্ট প্রাপ্ত পোস্টগুলোর তালিকা দেওয়া হলো। আপনি এডমিন ক্ষমতা দিয়ে এগুলো পর্যবেক্ষণ বা ডিলিট করতে পারবেন।</p>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+        
+        <div class="grid grid-cols-2 gap-3 pt-1">
           <div class="p-3.5 bg-slate-900/60 rounded-2xl border border-slate-800/60 text-center">
-            <span class="text-xs text-slate-400 block mb-1">রিপোর্ট প্রাপ্ত মোট পোস্ট</span>
+            <span class="text-xs text-slate-400 block mb-1">রিপোর্ট প্রাপ্ত পোস্টের সংখ্যা</span>
             <span id="reported-posts-count" class="text-2xl font-black text-rose-500 font-mono">0টি</span>
           </div>
           <div class="p-3.5 bg-slate-900/60 rounded-2xl border border-slate-800/60 text-center">
             <span class="text-xs text-slate-400 block mb-1">মোট সক্রিয় ভয়েস পোস্ট</span>
             <span id="total-active-posts" class="text-2xl font-black text-purple-400 font-mono">0টি</span>
+          </div>
+        </div>
+
+        <!-- REPORTED POSTS DETAILED AREA -->
+        <div class="mt-4 space-y-3">
+          <h4 class="font-bold text-xs text-rose-300 uppercase tracking-wider">রিপোর্ট প্রাপ্ত পোস্টগুলোর বিস্তারিত তালিকা:</h4>
+          <div id="reported-voices-feed" class="space-y-3 max-h-96 overflow-y-auto pr-1">
+            <!-- Dynamically populated via Javascript -->
+            <p class="text-xs text-slate-500 italic py-2">কোনো রিপোর্ট প্রাপ্ত পোস্ট নেই।</p>
           </div>
         </div>
       </div>
@@ -156,7 +168,10 @@
             <span id="recording-pulse" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
             <span id="recording-dot" class="relative inline-flex rounded-full h-3 w-3 bg-purple-500"></span>
           </span>
-          <h3 class="font-bold text-lg text-slate-100">নতুন কথা রেকর্ড করুন</h3>
+          <h3 class="font-bold text-lg text-slate-100 flex items-center gap-2">
+            <span>নতুন কথা রেকর্ড করুন</span>
+            <span id="admin-time-badge" class="hidden px-2 py-0.5 rounded-md text-[10px] bg-purple-600 text-white font-bold">৩ মিনিট মোড</span>
+          </h3>
         </div>
 
         <!-- Title Input & Categories selection -->
@@ -294,7 +309,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, collection, onSnapshot, addDoc, updateDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getFirestore, doc, collection, onSnapshot, addDoc, updateDoc, increment, arrayUnion, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     // Standard Firebase configurations
     const firebaseConfig = {
@@ -314,9 +329,6 @@
 
     // Secure App ID and Path Configuration
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'kothadotio';
-
-    // MASTER ADMIN PASSWORD CONSTANT
-    const ADMIN_PASSWORD = "omor3c@gmail.com";
 
     // APP STATE
     let currentUser = null;
@@ -416,17 +428,32 @@
       if (e.key === 'Enter') submitAdminPassword();
     });
 
-    function submitAdminPassword() {
+    // --- ওমর, এই সেই জাদুকরী পাসওয়ার্ড সিঙ্ক মেকানিজম! ---
+    async function submitAdminPassword() {
       const password = adminPasswordInput.value.trim();
-      if (password === ADMIN_PASSWORD) {
-        isAdmin = true;
-        sessionStorage.setItem('kothadot_is_admin', 'true');
-        adminModal.classList.add('hidden');
-        showToast("মাস্টার এডমিন অ্যাক্সেস সফলভাবে সচল হয়েছে! 🔓", "success");
-        updateAdminUI();
-        renderVoices();
-      } else {
-        showToast("ভুল পাসওয়ার্ড! দয়া করে সঠিক পাসওয়ার্ড দিন।", "error");
+      if (!password) {
+        showToast("অনুগ্রহ করে পাসওয়ার্ডটি দিন।", "error");
+        return;
+      }
+      
+      try {
+        // ফায়ারবেস ফায়ারস্টোর থেকে ডকুমেন্ট-আইডি অনুযায়ী পাসওয়ার্ড রিড করা হচ্ছে (জিরো-নলেজ আর্কিটেকচার)
+        const adminDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'adminPasswords', password);
+        const docSnap = await getDoc(adminDocRef);
+
+        if (docSnap.exists()) {
+          isAdmin = true;
+          sessionStorage.setItem('kothadot_is_admin', 'true');
+          adminModal.classList.add('hidden');
+          showToast("মাস্টার এডমিন অ্যাক্সেস সফলভাবে সচল হয়েছে! 🔓", "success");
+          updateAdminUI();
+          renderVoices();
+        } else {
+          showToast("ভুল পাসওয়ার্ড! ফায়ারবেস কনসোলের পাসওয়ার্ডের সাথে মেলেনি।", "error");
+        }
+      } catch (err) {
+        console.error("Admin verification error:", err);
+        showToast("সার্ভার যাচাইকরণ ব্যর্থ হয়েছে! রুলসগুলো চেক করুন।", "error");
       }
     }
 
@@ -440,12 +467,19 @@
     });
 
     function updateAdminUI() {
+      const recorderStatus = document.getElementById('recorder-status-text');
+      const adminTimeBadge = document.getElementById('admin-time-badge');
+
       if (isAdmin) {
         adminBadge.classList.remove('hidden');
         adminReportPanel.classList.remove('hidden');
+        adminTimeBadge.classList.remove('hidden');
+        recorderStatus.innerText = "মাস্টার এডমিন মোড: সর্বোচ্চ ৩ মিনিট রেকর্ড করতে পারবেন";
       } else {
         adminBadge.classList.add('hidden');
         adminReportPanel.classList.add('hidden');
+        adminTimeBadge.classList.add('hidden');
+        recorderStatus.innerText = "সর্বোচ্চ ১ মিনিট রেকর্ড করতে পারবেন";
       }
     }
 
@@ -510,6 +544,7 @@
         document.getElementById('total-active-posts').innerText = `${totalActive}টি`;
 
         renderVoices();
+        renderReportedVoicesOnly();
       }, (err) => {
         console.error("Firestore listening failed:", err);
         showToast("ডাটা লোড করতে ব্যর্থ হয়েছে।", "error");
@@ -539,6 +574,109 @@
           selectedTag = e.currentTarget.dataset.tag;
           renderCategories();
         });
+      });
+    }
+
+    // --- ওমর, শুধুমাত্র এডমিনদের জন্য বিশেষ রিপোর্ট তালিকা রেন্ডারিং ইঞ্জিন ---
+    function renderReportedVoicesOnly() {
+      const reportedContainer = document.getElementById('reported-voices-feed');
+      if (!isAdmin) return;
+
+      const reportedList = allVoices.filter(v => v.reportsCount && v.reportsCount > 0);
+
+      if (reportedList.length === 0) {
+        reportedContainer.innerHTML = `<p class="text-xs text-slate-500 italic py-2">বর্তমানে কোনো রিপোর্ট করা পোস্ট নেই।</p>`;
+        return;
+      }
+
+      reportedContainer.innerHTML = reportedList.map(v => {
+        return `
+          <div class="p-3 bg-slate-900/90 border border-rose-950 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in duration-300">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="px-2 py-0.5 rounded bg-rose-950 text-rose-400 text-[10px] font-bold border border-rose-900/30">🚨 রিপোর্ট: ${v.reportsCount} বার</span>
+                <span class="text-[10px] text-slate-500">ট্যাগ: #${v.tag}</span>
+              </div>
+              <h5 class="text-xs font-bold text-slate-200">${v.title || "বেনামী কণ্ঠ"}</h5>
+            </div>
+
+            <div class="flex items-center gap-2 self-end sm:self-auto">
+              <!-- প্লে বোতাম -->
+              <button 
+                data-id="reported-${v.id}"
+                data-audio="${v.audioData}"
+                class="reported-play-btn p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-bold flex items-center gap-1"
+              >
+                🔊 শুনুন
+              </button>
+
+              <!-- রিজেক্ট/খারিজ বোতাম -->
+              <button 
+                data-id="${v.id}"
+                class="reported-dismiss-btn p-2 rounded-lg bg-emerald-950/40 hover:bg-emerald-950/80 text-emerald-400 text-[11px] font-bold"
+                title="রিপোর্টগুলো মুছে দিন"
+              >
+                ✅ সমাধান
+              </button>
+
+              <!-- ডিলিট বোতাম -->
+              <button 
+                data-id="${v.id}"
+                class="reported-delete-btn p-2 rounded-lg bg-rose-900/30 hover:bg-rose-900/80 text-rose-300 text-[11px] font-bold"
+              >
+                🗑️ ডিলিট
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // রিপোর্ট বক্স ইভেন্ট লিসেনার বাইন্ডিং
+      reportedList.forEach(v => {
+        // প্লে
+        const playBtn = reportedContainer.querySelector(`[data-id="reported-${v.id}"]`);
+        if (playBtn) {
+          playBtn.addEventListener('click', () => toggleAudioPlayback(`reported-${v.id}`, v.audioData));
+        }
+
+        // ডিসমিস
+        const dismissBtn = reportedContainer.querySelector(`[data-id="${v.id}"].reported-dismiss-btn`);
+        if (dismissBtn) {
+          dismissBtn.addEventListener('click', async () => {
+            try {
+              const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'voices', v.id);
+              await updateDoc(docRef, {
+                reportsCount: 0,
+                reportedBy: []
+              });
+              showToast("রিপোর্টগুলো খারিজ করা হয়েছে। পোস্টটি এখন সুরক্ষিত।", "success");
+            } catch (err) {
+              console.error(err);
+              showToast("সমস্যা হয়েছে!", "error");
+            }
+          });
+        }
+
+        // ডিলিট
+        const delBtn = reportedContainer.querySelector(`[data-id="${v.id}"].reported-delete-btn`);
+        if (delBtn) {
+          delBtn.addEventListener('click', () => {
+            showConfirmModal("পোস্ট ডিলিট নিশ্চিতকরণ", "মাস্টার এডমিন হিসেবে আপনি কি এই রিপোর্টকৃত পোস্টটি ডিলিট করতে চান?", async () => {
+              try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'voices', v.id);
+                await updateDoc(docRef, {
+                  audioData: "", 
+                  deleted: true,
+                  deletedByAdmin: true
+                });
+                showToast("পোস্টটি সফলভাবে মুছে ফেলা হয়েছে।", "success");
+              } catch (err) {
+                console.error(err);
+                showToast("মুছে ফেলা সম্ভব হয়নি।", "error");
+              }
+            });
+          });
+        }
       });
     }
 
@@ -715,7 +853,7 @@
                 ${v.replies && v.replies.length > 0 ? v.replies.map(reply => `
                   <div class="p-2.5 bg-slate-950/40 rounded-xl border border-slate-900">
                     <div class="flex items-center justify-between text-[9px] text-slate-500 mb-1">
-                      <span>👤 বেনামী ব্যবহারকারী</span>
+                      <span>👤 ব্যবহারকারী</span>
                       <span>${new Date(reply.createdAt).toLocaleTimeString('bn-BD', { hour: '2-digit', minute: '2-digit' })}</span>
                     </div>
                     <p class="text-xs text-slate-300">${reply.text}</p>
@@ -825,7 +963,7 @@
         btn.addEventListener('click', (e) => {
           const id = e.currentTarget.dataset.id;
           const confirmTitle = isAdmin ? "এডমিন রিমুভাল কনফার্মেশন" : "পোস্ট ডিলিট নিশ্চিতকরণ";
-          const confirmText = isAdmin ? "মাস্টার এডমিন হিসেবে আপনি কি পোস্টটি মুছে দিতে চান?" : "আপনি কি নিশ্চিতভাবে আপনার এই পোস্টটি মুছে ফেলতে চান?";
+          const confirmText = isAdmin ? "মাস্টার এডমিন হিসেবে আপনি কি এই পোস্টটি মুছে দিতে চান?" : "আপনি কি নিশ্চিতভাবে আপনার এই পোস্টটি মুছে ফেলতে চান?";
           
           showConfirmModal(confirmTitle, confirmText, async () => {
             try {
@@ -1006,15 +1144,17 @@
         document.getElementById('timer-display').innerText = formatDuration(0);
         document.getElementById('start-record-btn').classList.add('hidden');
         document.getElementById('stop-record-btn').classList.remove('hidden');
-        document.getElementById('recorder-status-text').innerText = "আপনার কণ্ঠ রেকর্ড হচ্ছে...";
+        
+        const limitSeconds = isAdmin ? 180 : 60; // Admin gets 3 minutes, users get 1 minute
+        document.getElementById('recorder-status-text').innerText = `আপনার কণ্ঠ রেকর্ড হচ্ছে... (সর্বোচ্চ ${isAdmin ? '৩' : '১'} মিনিট)`;
 
         recordTimer = setInterval(() => {
           recordingDuration++;
           document.getElementById('timer-display').innerText = formatDuration(recordingDuration);
           
-          if (recordingDuration >= 60) {
+          if (recordingDuration >= limitSeconds) {
             stopRecordingProcess();
-            showToast("সর্বোচ্চ সময় ১ মিনিট পূর্ণ হয়েছে।", "info");
+            showToast(`সর্বোচ্চ সময় ${isAdmin ? '৩ মিনিট' : '১ মিনিট'} পূর্ণ হয়েছে।`, "info");
           }
         }, 1000);
 
@@ -1047,7 +1187,14 @@
       document.getElementById('start-record-btn').classList.remove('hidden');
       document.getElementById('stop-record-btn').classList.add('hidden');
       document.getElementById('record-actions').classList.add('hidden');
-      document.getElementById('recorder-status-text').innerText = "সর্বোচ্চ ১ মিনিট রেকর্ড করতে পারবেন";
+      
+      const recorderStatus = document.getElementById('recorder-status-text');
+      if (isAdmin) {
+        recorderStatus.innerText = "মাস্টার এডমিন মোড: সর্বোচ্চ ৩ মিনিট রেকর্ড করতে পারবেন";
+      } else {
+        recorderStatus.innerText = "সর্বোচ্চ ১ মিনিট রেকর্ড করতে পারবেন";
+      }
+      
       document.getElementById('voice-title-input').value = "";
     }
 
