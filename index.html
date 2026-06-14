@@ -73,18 +73,25 @@
       </div>
 
       <!-- লগইন ও প্রোফাইল বাটনসমূহ -->
-      <div class="flex items-center gap-3">
-        <!-- Google Sign-In Button -->
-        <button id="login-btn" class="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-xs font-bold hover:opacity-90 flex items-center gap-2 transition-all">
-          <svg class="h-4 w-4 fill-current" viewBox="0 0 24 24">
-            <path d="M12.24 10.285V13.4h6.887c-.275 1.565-1.88 4.604-6.887 4.604-4.33 0-7.866-3.577-7.866-8s3.536-8 7.866-8c2.46 0 4.105 1.025 5.047 1.926l2.427-2.334C17.955 2.192 15.34 1 12.24 1 5.92 1 1 5.92 1 12s4.92 11 11.24 11c6.59 0 11.01-4.63 11.01-11.24 0-.756-.08-1.333-.178-1.89H12.24z"/>
-          </svg>
-          গুগল দিয়ে লগইন
-        </button>
+      <div class="flex items-center gap-2 sm:gap-3">
+        <div id="auth-buttons-group" class="flex items-center gap-2">
+          <!-- Google Sign-In Button -->
+          <button id="login-btn" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-[11px] sm:text-xs font-bold hover:opacity-90 flex items-center gap-1.5 transition-all">
+            <svg class="h-3.5 w-3.5 fill-current" viewBox="0 0 24 24">
+              <path d="M12.24 10.285V13.4h6.887c-.275 1.565-1.88 4.604-6.887 4.604-4.33 0-7.866-3.577-7.866-8s3.536-8 7.866-8c2.46 0 4.105 1.025 5.047 1.926l2.427-2.334C17.955 2.192 15.34 1 12.24 1 5.92 1 1 5.92 1 12s4.92 11 11.24 11c6.59 0 11.01-4.63 11.01-11.24 0-.756-.08-1.333-.178-1.89H12.24z"/>
+            </svg>
+            গুগল লগইন
+          </button>
+
+          <!-- Guest Login Button -->
+          <button id="guest-login-btn" class="px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-800 text-[11px] sm:text-xs font-bold text-slate-300 hover:text-white transition-all">
+            অতিথি প্রবেশ
+          </button>
+        </div>
 
         <div id="user-profile" class="hidden flex items-center gap-2">
           <!-- Admin Indicator badge -->
-          <span id="admin-badge" class="hidden px-2.5 py-0.5 rounded-full text-[10px] font-black bg-rose-950 text-rose-400 border border-rose-800/40 animate-pulse">এডমিন</span>
+          <span id="admin-badge" class="hidden px-2.5 py-0.5 rounded-full text-[10px] font-black bg-rose-950 text-rose-400 border border-rose-800/40 animate-pulse"> can-moderate </span>
           
           <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-xs">
             <img id="user-photo" src="" class="w-5 h-5 rounded-full" alt="প্রোফাইল ছবি">
@@ -108,14 +115,14 @@
     <section class="text-center space-y-3 py-8 relative overflow-hidden rounded-3xl bg-gradient-to-b from-purple-950/10 to-transparent border border-purple-950/20">
       <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(147,51,234,0.05)_0%,transparent_100%)] pointer-events-none"></div>
       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-950/80 text-purple-300 border border-purple-800/40 text-xs font-semibold mb-2">
-        ✨ ভয়েস চেঞ্জার ও কড়া এডমিন মডারেশন
+        ✨ মড্যুলেশন ও ফিক্সড মাইক্রোফোন মডিউল
       </div>
       <h2 class="text-2xl md:text-4xl font-extrabold text-slate-100 tracking-tight leading-snug">
-        লগইন করুন এবং কণ্ঠ পরিবর্তন করে <br/>
-        <span class="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">মনের কথা শেয়ার করুন খোলামেলা!</span>
+        মনের কথা বলুন নিরাপদে ও নির্দ্বিধায়! <br/>
+        <span class="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">কণ্ঠ পরিবর্তন করে চমকে দিন সবাইকে!</span>
       </h2>
       <p class="text-xs md:text-sm text-slate-400 max-w-md mx-auto px-4">
-        অন্যদের কথা ফ্রিতে শুনুন। নিজে পোস্ট করতে ও মন্তব্য দিতে গুগল অ্যাকাউন্ট ব্যবহার করে মাত্র ১ ক্লিকে লগইন করুন।
+        যেকোনো ব্রাউজারে ঝামেলাহীন রেকর্ডিং নিশ্চিত করতে আমরা ব্যাকএন্ড কোডেক রি-রাইট করেছি। অতিথি বা জিমেইল দিয়ে লগইন করে শুরু করুন।
       </p>
     </section>
 
@@ -132,19 +139,16 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <!-- Total stats card -->
           <div class="bg-rose-950/10 border border-rose-900/20 rounded-2xl p-4 text-center">
             <p class="text-xs text-rose-400 font-semibold mb-1">মোট রিপোর্ট করা পোস্ট</p>
             <p id="admin-report-count" class="text-3xl font-black text-rose-500 font-mono">0</p>
           </div>
 
-          <!-- Total Active Voices -->
           <div class="bg-purple-950/10 border border-purple-900/20 rounded-2xl p-4 text-center">
             <p class="text-xs text-purple-400 font-semibold mb-1">মোট সক্রিয় অডিও পোস্ট</p>
             <p id="admin-total-voices" class="text-3xl font-black text-purple-400 font-mono">0</p>
           </div>
 
-          <!-- User ban quickly lookup -->
           <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between">
             <p class="text-xs text-slate-400 font-semibold mb-2">ইউজার আইডি ব্যান করুন সরাসরি</p>
             <div class="flex gap-2">
@@ -154,11 +158,9 @@
           </div>
         </div>
 
-        <!-- Banned users list view -->
         <div class="bg-slate-950/60 p-4 rounded-2xl border border-slate-900 text-xs">
           <p class="font-bold text-slate-400 mb-2">বর্তমানে ব্যানড ব্যবহারকারীদের তালিকা:</p>
           <div id="banned-users-list" class="flex flex-wrap gap-2">
-            <!-- Dynamically populated -->
             <span class="text-slate-600 italic">কোনো ব্যানড ব্যবহারকারী নেই।</span>
           </div>
         </div>
@@ -170,9 +172,12 @@
       <!-- Unauthorized Blur Overlay -->
       <div id="recording-lock-overlay" class="absolute inset-0 bg-slate-950/80 border border-slate-900 rounded-3xl backdrop-blur-md z-10 flex flex-col items-center justify-center text-center p-6 space-y-3">
         <div class="w-12 h-12 rounded-full bg-purple-950 border border-purple-800/40 flex items-center justify-center text-purple-400 text-xl font-bold">🔒</div>
-        <h4 class="font-bold text-slate-200 text-base">ভয়েস পোস্ট করার জন্য লগইন করুন</h4>
-        <p class="text-xs text-slate-400 max-w-xs">গোপনীয়তা বজায় রেখে নিজের কণ্ঠ পরিবর্তন করে কথা শেয়ার করতে জিমেইল দিয়ে লগইন করা আবশ্যক।</p>
-        <button id="auth-lock-btn" class="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-xs font-bold text-white transition-all">এখনই লগইন করুন</button>
+        <h4 class="font-bold text-slate-200 text-base">ভয়েস পোস্ট করার জন্য প্রবেশ করুন</h4>
+        <p class="text-xs text-slate-400 max-w-xs">গোপনীয়তা বজায় রেখে নিজের কণ্ঠ পরিবর্তন করে কথা শেয়ার করতে নিচে যেকোনো একটি পদ্ধতিতে প্রবেশ করুন।</p>
+        <div class="flex gap-2">
+          <button id="auth-lock-google-btn" class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-xs font-bold text-white transition-all">গুগল দিয়ে প্রবেশ</button>
+          <button id="auth-lock-guest-btn" class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-850 text-xs font-bold text-slate-300 transition-all">বেনামে প্রবেশ</button>
+        </div>
       </div>
 
       <!-- MAIN RECORDER PANEL -->
@@ -340,7 +345,7 @@
   <!-- প্ল্যাটফর্মের আসল ব্যাকএন্ড, অ্যাডমিন মডারেশন এবং ভয়েস মড্যুলেশন লজিক -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, collection, onSnapshot, addDoc, updateDoc, deleteDoc, increment, arrayUnion, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     // ফায়ারবেস কনফিগারেশন
@@ -376,11 +381,11 @@
 
     // রেকর্ডার এবং অডিও ম্যানিপুলেশন স্টেট
     let mediaRecorder = null;
-    let activeStream = null; // সেশন রিলিজ ট্র্যাকার
+    let activeStream = null; 
     let originalAudioBlob = null;
     let originalArrayBuffer = null;
     let processedBase64 = "";
-    let selectedEffect = "normal"; // normal, baby, robot, cartoon, monster
+    let selectedEffect = "normal"; 
     let recordTimer = null;
     let recordingDuration = 0;
     let isRecording = false;
@@ -443,7 +448,18 @@
         showToast("সফলভাবে গুগল লগইন সম্পন্ন হয়েছে!", "success");
       } catch (err) {
         console.error("Google login error:", err);
-        showToast("গুগল লগইন করতে সমস্যা হয়েছে।", "error");
+        showToast("গুগল লগইন করতে সমস্যা হয়েছে। রিফ্রেশ করে আবার চেষ্টা করুন।", "error");
+      }
+    }
+
+    // অ্যানোনিমাস বা অতিথি প্রবেশ (Guest Mode) (এটি পপ-আপ ছাড়া কাজ করে)
+    async function handleGuestLogin() {
+      try {
+        await signInAnonymously(auth);
+        showToast("অতিথি হিসেবে সফলভাবে প্রবেশ করেছেন!", "success");
+      } catch (err) {
+        console.error("Anonymous login error:", err);
+        showToast("বেনামে প্রবেশ ব্যর্থ হয়েছে।", "error");
       }
     }
 
@@ -473,10 +489,10 @@
         }
 
         // ২. ইউজার প্রোফাইল ইন্টারফেস আপডেট
-        document.getElementById('login-btn').classList.add('hidden');
+        document.getElementById('auth-buttons-group').classList.add('hidden');
         document.getElementById('user-profile').classList.remove('hidden');
         document.getElementById('user-photo').src = user.photoURL || 'https://www.gravatar.com/avatar/?d=mp';
-        document.getElementById('user-name').innerText = user.displayName || 'বেনামী';
+        document.getElementById('user-name').innerText = user.isAnonymous ? "বেনামী অতিথি" : (user.displayName || 'ইউজার');
         
         // পোস্ট করার লক সরিয়ে নেওয়া
         document.getElementById('recording-lock-overlay').classList.add('hidden');
@@ -496,7 +512,7 @@
         // লগআউট স্টেট হ্যান্ডলার
         currentUser = null;
         isAdmin = false;
-        document.getElementById('login-btn').classList.remove('hidden');
+        document.getElementById('auth-buttons-group').classList.remove('hidden');
         document.getElementById('user-profile').classList.add('hidden');
         document.getElementById('admin-panel').classList.add('hidden');
         document.getElementById('admin-badge').classList.add('hidden');
@@ -817,7 +833,7 @@
                 ${v.replies && v.replies.length > 0 ? v.replies.map(reply => `
                   <div class="p-2.5 bg-slate-950/40 rounded-xl border border-slate-900">
                     <div class="flex items-center justify-between text-[9px] text-slate-500 mb-1">
-                      <span>👤  ব্যবহারকারী</span>
+                      <span>👤 ব্যবহারকারী</span>
                       <span>${new Date(reply.createdAt).toLocaleTimeString('bn-BD', { hour: '2-digit', minute: '2-digit' })}</span>
                     </div>
                     <p class="text-xs text-slate-300">${reply.text}</p>
@@ -878,7 +894,7 @@
       document.querySelectorAll('.report-btn').forEach(btn => {
         btn.addEventListener('click', async (e) => {
           if (!currentUser) {
-            showToast("রিপোর্ট করার জন্য অনুগ্রহ করে গুগল দিয়ে লগইন করুন!", "error");
+            showToast("রিপোর্ট করার জন্য অনুগ্রহ করে লগইন করুন!", "error");
             return;
           }
           const id = e.currentTarget.dataset.id;
@@ -1103,11 +1119,10 @@
     async function initRecorder() {
       try {
         if (!currentUser) {
-          showToast("রেকর্ড করতে প্রথমে গুগল দিয়ে লগইন করুন।", "error");
+          showToast("রেকর্ড করতে প্রথমে গুগল বা বেনামী অতিথি হিসেবে প্রবেশ করুন।", "error");
           return;
         }
 
-        // ব্রাউজার সিকিউরিটি প্রোটোকল ডিটেক্ট করা হচ্ছে
         const hasMediaDevices = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
 
         if (!hasMediaDevices) {
@@ -1127,18 +1142,26 @@
           return;
         }
 
-        // আসল মাইক্রোফোন পারমিশন এবং স্ট্রিম রিকোয়েস্ট
-        const stream = await navigator.mediaDevices.getUserMedia({ 
-          audio: {
-            echoCancellation: true,
-            noiseSuppression: true,
-            autoGainControl: true
-          } 
-        });
+        // --- ওমর, লক্ষ্য করো! অ্যান্ড্রয়েড শাওমি/রিয়েলমি কাস্টম রমে এই মাল্টি-লেভেল ফলব্যাক মেকানিজমটি এখন চমৎকার কাজ করবে ---
+        let stream;
+        try {
+          // লেভেল ১: প্রথমে আধুনিক ফিল্টারসহ ট্রাই করা হচ্ছে
+          stream = await navigator.mediaDevices.getUserMedia({ 
+            audio: {
+              echoCancellation: true,
+              noiseSuppression: true,
+              autoGainControl: true
+            } 
+          });
+        } catch (constraintsError) {
+          console.warn("অ্যাডভান্সড ফিল্টার ব্যর্থ হয়েছে, সাধারণ মোডে সচল করা হচ্ছে:", constraintsError);
+          // লেভেল ২: যদি আগেরটি ব্যর্থ হয়, তাহলে পিওর র (Raw) মোডে চালু করা হবে
+          stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        }
 
-        activeStream = stream; // ট্র্যাকিং সেশন স্টোর করা হলো
+        activeStream = stream; // সেশন ট্র্যাকার স্টোর করা হলো
 
-        // ডাইনামিক মোবাইল অডিও কোডেক ডিটেকশন (যাতে ক্র্যাশ না করে)
+        // ডাইনামিক মোবাইল অডিও কোডেক ডিটেকশন (ক্র্যাশ এড়ানোর জন্য)
         let options = {};
         if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
           options = { mimeType: 'audio/webm;codecs=opus' };
@@ -1148,7 +1171,6 @@
           options = { mimeType: 'audio/mp4' };
         }
 
-        // সাকসেসফুল পারমিশন ট্রিগার
         mediaRecorder = new MediaRecorder(stream, options);
         audioChunks = [];
 
@@ -1166,7 +1188,7 @@
           originalAudioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
           originalArrayBuffer = await originalAudioBlob.arrayBuffer();
 
-          // ইনিশিয়াল কনভার্সন
+          // প্রথম রূপান্তর
           await applyVoiceEffect("normal");
 
           showToast("রেকর্ডিং সম্পন্ন হয়েছে! এবার ভয়েস ইফেক্ট চয়েস করুন।", "success");
@@ -1470,7 +1492,11 @@
 
     // ইভেন্ট লিসেনারসমূহ রেজিস্টার করা হচ্ছে
     document.getElementById('login-btn').addEventListener('click', handleGoogleLogin);
-    document.getElementById('auth-lock-btn').addEventListener('click', handleGoogleLogin);
+    document.getElementById('guest-login-btn').addEventListener('click', handleGuestLogin);
+    
+    document.getElementById('auth-lock-google-btn').addEventListener('click', handleGoogleLogin);
+    document.getElementById('auth-lock-guest-btn').addEventListener('click', handleGuestLogin);
+    
     document.getElementById('logout-btn').addEventListener('click', handleLogout);
 
     document.getElementById('start-record-btn').addEventListener('click', initRecorder);
