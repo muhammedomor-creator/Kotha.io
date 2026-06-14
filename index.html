@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>কথা.io | বেনামী কণ্ঠ ও ভয়েস মড্যুলেশন প্ল্যাটফর্ম</title>
+  <title>কথা.io | বেনামী কণ্ঠ ও মডারেশন প্ল্যাটফর্ম</title>
   
   <!-- Google Fonts: Hind Siliguri for beautiful Bengali typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -121,6 +121,19 @@
       <p class="text-xs md:text-sm text-slate-400 max-w-md mx-auto px-4">
         এখানে কোনো ছবি নেই, কোনো নাম নেই। শুধু খাঁটি আবেগ এবং সত্য অনুভূতি। মনের লুকানো অনুভূতি শেয়ার করুন সহজে।
       </p>
+    </section>
+
+    <!-- TERMS & PRIVACY BUBBLE POLICY -->
+    <section class="p-5 rounded-2xl bg-indigo-950/20 border border-indigo-900/30 text-xs space-y-2 relative overflow-hidden">
+      <div class="absolute top-0 right-0 p-3 opacity-15">📜</div>
+      <h4 class="font-bold text-indigo-400 flex items-center gap-2">
+        <span>🛡️ ব্যবহারকারী নীতিমালা ও প্রাইভেসি পলিসি:</span>
+      </h4>
+      <ul class="list-disc list-inside text-slate-400 space-y-1">
+        <li>এটি একটি শতভাগ গোপন ও নিরাপদ বেনামী প্লাটফর্ম। কোনো ব্যবহারকারীর তথ্য ট্র্যাক করা হয় না।</li>
+        <li class="text-rose-400 font-semibold">শর্তাবলী: বাস্তব জীবনে পরিচিত বা অপরিচিত কোনো ব্যক্তির ব্যক্তিগত নাম ব্যবহার করে উস্কানিমূলক, মানহানিকর বা অপপ্রচারমূলক পোস্ট করা সম্পূর্ণ নিষিদ্ধ।</li>
+        <li>নীতিমালা ভঙ্গকারী পোস্টগুলো এডমিন প্যানেল দ্বারা তাত্ক্ষণিকভাবে ডিলিট করা হবে।</li>
+      </ul>
     </section>
 
     <!-- ADMIN REPORT SUMMARY (Visible only when admin logged in) -->
@@ -260,8 +273,8 @@
 
     <!-- TAB FILTERS -->
     <section class="space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
-        <div class="flex gap-1.5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-2.5">
+        <div class="flex flex-wrap gap-1.5">
           <button
             id="tab-all"
             class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all bg-purple-950/60 text-purple-300 border border-purple-800/40"
@@ -280,9 +293,15 @@
           >
             👤 আমার কথা
           </button>
+          <button
+            id="tab-reported-sort"
+            class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all text-rose-400/80 hover:text-rose-100 flex items-center gap-1.5 hover:bg-rose-950/20 border border-transparent"
+          >
+            🚨 বেশি রিপোর্ট
+          </button>
         </div>
 
-        <div class="text-xs text-slate-500 font-medium">
+        <div class="text-xs text-slate-500 font-medium self-end sm:self-auto">
           মোট: <span id="voices-count" class="font-mono text-slate-300 font-bold">0টি</span> কথা
         </div>
       </div>
@@ -333,7 +352,7 @@
     // APP STATE
     let currentUser = null;
     let allVoices = [];
-    let currentTab = 'all'; // all, trending, personal
+    let currentTab = 'all'; // all, trending, personal, reported-sort
     let selectedTag = 'সাধারণ আড্ডা';
     let isAdmin = sessionStorage.getItem('kothadot_is_admin') === 'true'; // Session Storage Persistence
     const tagPresets = ["সাধারণ আড্ডা", "মনের কষ্ট", "ভালোবাসা", "অনুপ্রেরণা", "গোপন কথা", "গানের সুর", "মজার গল্প"];
@@ -428,7 +447,7 @@
       if (e.key === 'Enter') submitAdminPassword();
     });
 
-    // --- ওমর, এই সেই জাদুকরী পাসওয়ার্ড সিঙ্ক মেকানিজম! ---
+    // পাসওয়ার্ড সিঙ্ক মেকানিজম
     async function submitAdminPassword() {
       const password = adminPasswordInput.value.trim();
       if (!password) {
@@ -437,7 +456,6 @@
       }
       
       try {
-        // ফায়ারবেস ফায়ারস্টোর থেকে ডকুমেন্ট-আইডি অনুযায়ী পাসওয়ার্ড রিড করা হচ্ছে (জিরো-নলেজ আর্কিটেকচার)
         const adminDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'adminPasswords', password);
         const docSnap = await getDoc(adminDocRef);
 
@@ -577,7 +595,7 @@
       });
     }
 
-    // --- ওমর, শুধুমাত্র এডমিনদের জন্য বিশেষ রিপোর্ট তালিকা রেন্ডারিং ইঞ্জিন ---
+    // এডমিনদের জন্য বিশেষ রিপোর্ট তালিকা রেন্ডারিং ইঞ্জিন
     function renderReportedVoicesOnly() {
       const reportedContainer = document.getElementById('reported-voices-feed');
       if (!isAdmin) return;
@@ -588,6 +606,9 @@
         reportedContainer.innerHTML = `<p class="text-xs text-slate-500 italic py-2">বর্তমানে কোনো রিপোর্ট করা পোস্ট নেই।</p>`;
         return;
       }
+
+      // Sort reported voices by report count in descending order
+      reportedList.sort((a, b) => (b.reportsCount || 0) - (a.reportsCount || 0));
 
       reportedContainer.innerHTML = reportedList.map(v => {
         return `
@@ -633,13 +654,11 @@
 
       // রিপোর্ট বক্স ইভেন্ট লিসেনার বাইন্ডিং
       reportedList.forEach(v => {
-        // প্লে
         const playBtn = reportedContainer.querySelector(`[data-id="reported-${v.id}"]`);
         if (playBtn) {
           playBtn.addEventListener('click', () => toggleAudioPlayback(`reported-${v.id}`, v.audioData));
         }
 
-        // ডিসমিস
         const dismissBtn = reportedContainer.querySelector(`[data-id="${v.id}"].reported-dismiss-btn`);
         if (dismissBtn) {
           dismissBtn.addEventListener('click', async () => {
@@ -657,7 +676,6 @@
           });
         }
 
-        // ডিলিট
         const delBtn = reportedContainer.querySelector(`[data-id="${v.id}"].reported-delete-btn`);
         if (delBtn) {
           delBtn.addEventListener('click', () => {
@@ -685,16 +703,17 @@
       const feedContainer = document.getElementById('voices-feed');
       const counterElement = document.getElementById('voices-count');
 
-      // Filter based on selected tabs
-      const filtered = allVoices.filter(v => {
-        if (currentTab === 'personal') {
-          return v.creatorId === currentUser?.uid;
-        }
-        if (currentTab === 'trending') {
-          return v.likes >= 2; 
-        }
-        return true;
-      });
+      // Filter/Sort based on selected tabs
+      let filtered = [...allVoices];
+      
+      if (currentTab === 'personal') {
+        filtered = filtered.filter(v => v.creatorId === currentUser?.uid);
+      } else if (currentTab === 'trending') {
+        filtered = filtered.filter(v => v.likes >= 2); 
+      } else if (currentTab === 'reported-sort') {
+        // Sort from most reported to least reported
+        filtered.sort((a, b) => (b.reportsCount || 0) - (a.reportsCount || 0));
+      }
 
       counterElement.innerText = `${filtered.length}টি`;
 
@@ -738,7 +757,7 @@
                 ${isAdmin || isOwnPost ? `
                   <button
                     data-id="${v.id}"
-                    class="delete-voice-btn p-1.5 text-slate-500 hover:text-rose-400 hover:bg-rose-950/20 rounded-lg transition-all"
+                    class="delete-voice-btn p-1.5 rounded-lg bg-rose-950/20 text-rose-400 hover:text-white hover:bg-rose-600 transition-all"
                     title="${isAdmin ? 'পোস্ট ডিলিট করুন (এডমিন)' : 'মুছে ফেলুন'}"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -1276,7 +1295,7 @@
     // TABS CONTROL LOGIC
     function switchTab(tabId, tabElement) {
       currentTab = tabId;
-      document.querySelectorAll('#tab-all, #tab-trending, #tab-mine').forEach(btn => {
+      document.querySelectorAll('#tab-all, #tab-trending, #tab-mine, #tab-reported-sort').forEach(btn => {
         btn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all text-slate-400 hover:text-slate-100 flex items-center gap-1.5";
       });
       tabElement.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all bg-purple-950/60 text-purple-300 border border-purple-800/40 flex items-center gap-1.5";
@@ -1293,6 +1312,7 @@
     document.getElementById('tab-all').addEventListener('click', (e) => switchTab('all', e.currentTarget));
     document.getElementById('tab-trending').addEventListener('click', (e) => switchTab('trending', e.currentTarget));
     document.getElementById('tab-mine').addEventListener('click', (e) => switchTab('personal', e.currentTarget));
+    document.getElementById('tab-reported-sort').addEventListener('click', (e) => switchTab('reported-sort', e.currentTarget));
 
     // ON DOM LOAD INITIALIZATIONS
     window.onload = () => {
