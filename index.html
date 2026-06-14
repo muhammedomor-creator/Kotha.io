@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>কথা.io | এডমিন প্যানেল, গুগল লগইন ও ভয়েস মড্যুলেশন</title>
+  <title>কথা.io | বেনামী কণ্ঠ শেয়ারিং প্ল্যাটফর্ম</title>
   
-  <!-- গুগল ফন্ট: বাংলা টাইপোগ্রাফির জন্য চমৎকার হিন্দ শিলিগুড়ি ফন্ট -->
+  <!-- Google Fonts: Hind Siliguri for beautiful Bengali typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   
-  <!-- টেইলউইন্ড সিএসএস সিডিএন -->
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -26,7 +26,7 @@
   </script>
 
   <style>
-    /* স্মুথ স্ক্রলবার কাস্টমাইজেশন */
+    /* Smooth Scrollbar */
     ::-webkit-scrollbar {
       width: 6px;
     }
@@ -44,261 +44,160 @@
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col selection:bg-purple-600 selection:text-white">
 
-  <!-- কাস্টম অ্যালার্ট নোটিফিকেশন কন্টেইনার -->
+  <!-- CUSTOM ALERTS CONTAINER (To avoid browser alert()) -->
   <div id="toast-container" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 w-full max-w-sm px-4"></div>
 
-  <!-- কাস্টম কনফার্মেশন মডাল উইন্ডো -->
+  <!-- CUSTOM CONFIRMATION MODAL -->
   <div id="confirm-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden px-4">
     <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 w-full max-w-md shadow-2xl animate-in fade-in zoom-in-95 duration-200">
-      <h3 id="confirm-modal-title" class="text-lg font-bold text-slate-100 mb-2">আপনি কি নিশ্চিত?</h3>
-      <p id="confirm-modal-text" class="text-sm text-slate-400 mb-6">এই কাজটি আর ফিরিয়ে নেওয়া যাবে না।</p>
+      <h3 class="text-lg font-bold text-slate-100 mb-2">আপনি কি নিশ্চিত?</h3>
+      <p id="confirm-modal-text" class="text-sm text-slate-400 mb-6">এই পোস্টটি ডিলিট করলে তা আর ফিরে পাওয়া যাবে না।</p>
       <div class="flex justify-end gap-3">
         <button id="confirm-cancel-btn" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold transition-all">বাতিল করুন</button>
-        <button id="confirm-ok-btn" class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-xs font-bold text-white transition-all">নিশ্চিত করুন</button>
+        <button id="confirm-ok-btn" class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-xs font-bold text-white transition-all">ডিলিট করুন</button>
       </div>
     </div>
   </div>
 
-  <!-- হেডার বা নেভিগেশন বার -->
+  <!-- HEADER -->
   <header class="border-b border-slate-900 bg-slate-950/80 backdrop-blur-xl sticky top-0 z-40">
-    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+    <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-purple-500/20">
           <span class="text-xl font-black text-white">ক</span>
         </div>
         <div>
           <h1 class="text-xl font-black bg-gradient-to-r from-purple-400 via-indigo-200 to-white bg-clip-text text-transparent">কথা.io</h1>
-          <p class="text-[10px] text-slate-400 font-medium tracking-wide">১০০% গোপন ও ভয়েস চেঞ্জার প্ল্যাটফর্ম</p>
+          <p class="text-[10px] text-slate-400 font-medium tracking-wide">১০০% গোপন ও সুরক্ষিত প্ল্যাটফর্ম</p>
         </div>
       </div>
 
-      <!-- লগইন ও প্রোফাইল বাটনসমূহ -->
-      <div class="flex items-center gap-2 sm:gap-3">
-        <div id="auth-buttons-group" class="flex items-center gap-2">
-          <!-- Google Sign-In Button -->
-          <button id="login-btn" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-[11px] sm:text-xs font-bold hover:opacity-90 flex items-center gap-1.5 transition-all">
-            <svg class="h-3.5 w-3.5 fill-current" viewBox="0 0 24 24">
-              <path d="M12.24 10.285V13.4h6.887c-.275 1.565-1.88 4.604-6.887 4.604-4.33 0-7.866-3.577-7.866-8s3.536-8 7.866-8c2.46 0 4.105 1.025 5.047 1.926l2.427-2.334C17.955 2.192 15.34 1 12.24 1 5.92 1 1 5.92 1 12s4.92 11 11.24 11c6.59 0 11.01-4.63 11.01-11.24 0-.756-.08-1.333-.178-1.89H12.24z"/>
-            </svg>
-            গুগল লগইন
-          </button>
-
-          <!-- Guest Login Button -->
-          <button id="guest-login-btn" class="px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-800 text-[11px] sm:text-xs font-bold text-slate-300 hover:text-white transition-all">
-            অতিথি প্রবেশ
-          </button>
-        </div>
-
-        <div id="user-profile" class="hidden flex items-center gap-2">
-          <!-- Admin Indicator badge -->
-          <span id="admin-badge" class="hidden px-2.5 py-0.5 rounded-full text-[10px] font-black bg-rose-950 text-rose-400 border border-rose-800/40 animate-pulse"> can-moderate </span>
-          
-          <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-xs">
-            <img id="user-photo" src="" class="w-5 h-5 rounded-full" alt="প্রোফাইল ছবি">
-            <span id="user-name" class="font-medium text-slate-300 max-w-[80px] truncate">ইউজার</span>
-          </div>
-          
-          <button id="logout-btn" class="p-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-rose-900/30 text-slate-400 hover:text-rose-400 text-xs font-bold transition-all" title="লগআউট">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-          </button>
+      <div class="flex items-center gap-2">
+        <div id="auth-status" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-950/40 border border-purple-800/40 text-xs">
+          <span class="w-2 h-2 rounded-full bg-slate-500 animate-pulse"></span>
+          <span class="font-mono text-[11px] text-purple-300">সংযোগ হচ্ছে...</span>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- মূল কন্টেন্ট উইন্ডো -->
-  <main class="flex-1 max-w-5xl w-full mx-auto px-4 py-6 md:py-8 space-y-8 pb-32">
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-6 md:py-8 space-y-8 pb-32">
     
-    <!-- হিরো ব্যানার সেকশন -->
+    <!-- Hero Banner -->
     <section class="text-center space-y-3 py-8 relative overflow-hidden rounded-3xl bg-gradient-to-b from-purple-950/10 to-transparent border border-purple-950/20">
       <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(147,51,234,0.05)_0%,transparent_100%)] pointer-events-none"></div>
       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-950/80 text-purple-300 border border-purple-800/40 text-xs font-semibold mb-2">
-        ✨ মড্যুলেশন ও ফিক্সড মাইক্রোফোন মডিউল
+        ✨ আপনার পরিচয় সম্পূর্ণ গোপন থাকবে
       </div>
       <h2 class="text-2xl md:text-4xl font-extrabold text-slate-100 tracking-tight leading-snug">
-        মনের কথা বলুন নিরাপদে ও নির্দ্বিধায়! <br/>
-        <span class="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">কণ্ঠ পরিবর্তন করে চমকে দিন সবাইকে!</span>
+        আপনার কণ্ঠ গোপন রেখে <br/>
+        <span class="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">মনের কথা বলুন খোলামেলা!</span>
       </h2>
       <p class="text-xs md:text-sm text-slate-400 max-w-md mx-auto px-4">
-        যেকোনো ব্রাউজারে ঝামেলাহীন রেকর্ডিং নিশ্চিত করতে আমরা ব্যাকএন্ড কোডেক রি-রাইট করেছি। অতিথি বা জিমেইল দিয়ে লগইন করে শুরু করুন।
+        এখানে কোনো ছবি নেই, কোনো নাম নেই। শুধু খাঁটি আবেগ এবং সত্য অনুভূতি। মনের লুকানো অনুভূতি শেয়ার করুন সহজে।
       </p>
     </section>
 
-    <!-- ADMIN DASHBOARD PANEL (Visible only to omor3c@gmail.com) -->
-    <section id="admin-panel" class="hidden bg-gradient-to-br from-rose-950/20 to-slate-950 border border-rose-900/30 rounded-3xl p-6 shadow-xl relative overflow-hidden">
-      <div class="absolute top-0 right-0 w-32 h-32 bg-rose-600/5 rounded-full blur-3xl pointer-events-none"></div>
-      <div class="relative space-y-4">
-        <div class="flex items-center justify-between border-b border-rose-900/20 pb-3">
-          <div class="flex items-center gap-3">
-            <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
-            <h3 class="font-extrabold text-lg text-rose-300">এডমিন কন্ট্রোল প্যানেল (কথা.io)</h3>
-          </div>
-          <span class="text-xs text-rose-400/80">মাস্টার এডমিন: <strong>omor3c@gmail.com</strong></span>
+    <!-- RECORDING DASHBOARD CARD -->
+    <section class="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800/80 rounded-3xl p-6 shadow-xl relative overflow-hidden">
+      <div class="absolute top-0 right-0 w-32 h-32 bg-purple-600/5 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute bottom-0 left-0 w-32 h-32 bg-blue-600/5 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="relative space-y-6">
+        <div class="flex items-center gap-3">
+          <span class="flex h-3 w-3 relative">
+            <span id="recording-pulse" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+            <span id="recording-dot" class="relative inline-flex rounded-full h-3 w-3 bg-purple-500"></span>
+          </span>
+          <h3 class="font-bold text-lg text-slate-100">নতুন কথা রেকর্ড করুন</h3>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="bg-rose-950/10 border border-rose-900/20 rounded-2xl p-4 text-center">
-            <p class="text-xs text-rose-400 font-semibold mb-1">মোট রিপোর্ট করা পোস্ট</p>
-            <p id="admin-report-count" class="text-3xl font-black text-rose-500 font-mono">0</p>
+        <!-- Title Input & Categories selection -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1.5">আপনার টপিক / ক্যাপশন (ঐচ্ছিক)</label>
+            <input 
+              id="voice-title-input"
+              type="text"
+              placeholder="যেমন: মাঝরাতের নিঃসঙ্গতা..." 
+              class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-purple-500 transition-colors"
+            />
           </div>
 
-          <div class="bg-purple-950/10 border border-purple-900/20 rounded-2xl p-4 text-center">
-            <p class="text-xs text-purple-400 font-semibold mb-1">মোট সক্রিয় অডিও পোস্ট</p>
-            <p id="admin-total-voices" class="text-3xl font-black text-purple-400 font-mono">0</p>
-          </div>
-
-          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between">
-            <p class="text-xs text-slate-400 font-semibold mb-2">ইউজার আইডি ব্যান করুন সরাসরি</p>
-            <div class="flex gap-2">
-              <input id="quick-ban-input" type="text" placeholder="ইউজার UID লিখুন..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-rose-600">
-              <button id="quick-ban-btn" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-xs font-bold rounded-xl transition-all">ব্যান</button>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1.5 font-medium">ক্যাটাগরি বা হ্যাশট্যাগ</label>
+            <div id="category-selector" class="flex flex-wrap gap-2 max-h-24 overflow-y-auto pr-1">
+              <!-- Rendered via JS -->
             </div>
           </div>
         </div>
 
-        <div class="bg-slate-950/60 p-4 rounded-2xl border border-slate-900 text-xs">
-          <p class="font-bold text-slate-400 mb-2">বর্তমানে ব্যানড ব্যবহারকারীদের তালিকা:</p>
-          <div id="banned-users-list" class="flex flex-wrap gap-2">
-            <span class="text-slate-600 italic">কোনো ব্যানড ব্যবহারকারী নেই।</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- VOICE RECORDING SECTION (Restricted to logged-in users only) -->
-    <section id="recording-wrapper" class="relative">
-      <!-- Unauthorized Blur Overlay -->
-      <div id="recording-lock-overlay" class="absolute inset-0 bg-slate-950/80 border border-slate-900 rounded-3xl backdrop-blur-md z-10 flex flex-col items-center justify-center text-center p-6 space-y-3">
-        <div class="w-12 h-12 rounded-full bg-purple-950 border border-purple-800/40 flex items-center justify-center text-purple-400 text-xl font-bold">🔒</div>
-        <h4 class="font-bold text-slate-200 text-base">ভয়েস পোস্ট করার জন্য প্রবেশ করুন</h4>
-        <p class="text-xs text-slate-400 max-w-xs">গোপনীয়তা বজায় রেখে নিজের কণ্ঠ পরিবর্তন করে কথা শেয়ার করতে নিচে যেকোনো একটি পদ্ধতিতে প্রবেশ করুন।</p>
-        <div class="flex gap-2">
-          <button id="auth-lock-google-btn" class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-xs font-bold text-white transition-all">গুগল দিয়ে প্রবেশ</button>
-          <button id="auth-lock-guest-btn" class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-850 text-xs font-bold text-slate-300 transition-all">বেনামে প্রবেশ</button>
-        </div>
-      </div>
-
-      <!-- MAIN RECORDER PANEL -->
-      <div class="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800/80 rounded-3xl p-6 shadow-xl relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-32 h-32 bg-purple-600/5 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute bottom-0 left-0 w-32 h-32 bg-blue-600/5 rounded-full blur-3xl pointer-events-none"></div>
-
-        <div class="relative space-y-6">
-          <div class="flex items-center gap-3">
-            <span class="flex h-3 w-3 relative">
-              <span id="recording-pulse" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
-              <span id="recording-dot" class="relative inline-flex rounded-full h-3 w-3 bg-purple-500"></span>
-            </span>
-            <h3 class="font-bold text-lg text-slate-100">নতুন কথা রেকর্ড করুন</h3>
+        <!-- Recorder UI Module -->
+        <div class="flex flex-col items-center justify-center py-6 bg-slate-950/50 rounded-2xl border border-slate-800/60">
+          
+          <div class="mb-4 text-center">
+            <span id="recorder-status-text" class="text-sm text-slate-400">সর্বোচ্চ ১ মিনিট রেকর্ড করতে পারবেন</span>
+            <div id="timer-display" class="text-2xl font-mono font-bold text-slate-300 mt-1 hidden">0:00</div>
           </div>
 
-          <!-- ক্যাপশন ও ক্যাটাগরি প্যানেল -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-semibold text-slate-400 mb-1.5">আপনার টপিক / ক্যাপশন (ঐচ্ছিক)</label>
-              <input 
-                id="voice-title-input"
-                type="text"
-                placeholder="যেমন: মাঝরাতের নিঃসঙ্গতা..." 
-                class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-purple-500 transition-colors"
-              />
-            </div>
+          <!-- Controls panel -->
+          <div class="flex items-center justify-center gap-4">
+            <!-- Start button -->
+            <button
+              id="start-record-btn"
+              class="w-16 h-16 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 text-white flex items-center justify-center shadow-lg shadow-purple-500/20 hover:scale-105 active:scale-95 transition-all"
+              title="রেকর্ড শুরু করুন"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+              </svg>
+            </button>
 
-            <div>
-              <label class="block text-xs font-semibold text-slate-400 mb-1.5 font-medium">ক্যাটাগরি বা হ্যাশট্যাগ</label>
-              <div id="category-selector" class="flex flex-wrap gap-2 max-h-24 overflow-y-auto pr-1">
-                <!-- জাভাস্ক্রিপ্ট দ্বারা রেন্ডার হবে -->
-              </div>
-            </div>
-          </div>
+            <!-- Stop button (hidden initially) -->
+            <button
+              id="stop-record-btn"
+              class="w-16 h-16 rounded-full bg-rose-600 text-white flex items-center justify-center shadow-lg shadow-rose-500/20 animate-pulse hover:scale-105 active:scale-95 transition-all hidden"
+              title="রেকর্ড সম্পন্ন করুন"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H10a1 1 0 01-1-1v-4z" />
+              </svg>
+            </button>
 
-          <!-- ভয়েস চেঞ্জার ইফেক্টস প্যানেল -->
-          <div id="voice-effects-panel" class="p-4 bg-slate-950/60 rounded-2xl border border-slate-850 space-y-3 hidden">
-            <label class="block text-xs font-bold text-purple-400">কণ্ঠস্বর পরিবর্তন করুন (ভয়েস ইফেক্টস):</label>
-            <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
-              <button data-effect="normal" class="effect-btn px-3 py-2.5 rounded-xl text-xs font-semibold bg-purple-600 text-white border border-purple-500 transition-all">
-                🎙️ সাধারণ কণ্ঠ
-              </button>
-              <button data-effect="baby" class="effect-btn px-3 py-2.5 rounded-xl text-xs font-semibold bg-slate-900 text-slate-300 hover:bg-slate-850 transition-all">
-                👶 ছোট বাচ্চা
-              </button>
-              <button data-effect="robot" class="effect-btn px-3 py-2.5 rounded-xl text-xs font-semibold bg-slate-900 text-slate-300 hover:bg-slate-850 transition-all">
-                🤖 রোবট
-              </button>
-              <button data-effect="cartoon" class="effect-btn px-3 py-2.5 rounded-xl text-xs font-semibold bg-slate-900 text-slate-300 hover:bg-slate-850 transition-all">
-                ⚡ মোটু পাতলু
-              </button>
-              <button data-effect="monster" class="effect-btn px-3 py-2.5 rounded-xl text-xs font-semibold bg-slate-900 text-slate-300 hover:bg-slate-850 transition-all">
-                👹 দানব/ভুতুড়ে
-              </button>
-            </div>
-          </div>
-
-          <!-- রেকর্ডার ইন্টারফেস মডিউল -->
-          <div class="flex flex-col items-center justify-center py-6 bg-slate-950/50 rounded-2xl border border-slate-800/60">
-            <div class="mb-4 text-center">
-              <span id="recorder-status-text" class="text-sm text-slate-400">সর্বোচ্চ ১ মিনিট রেকর্ড করতে পারবেন</span>
-              <div id="timer-display" class="text-2xl font-mono font-bold text-slate-300 mt-1 hidden">0:00</div>
-            </div>
-
-            <!-- রেকর্ডিং অ্যাকশন বাটনস -->
-            <div class="flex items-center justify-center gap-4">
+            <!-- Preview & Action Box (hidden initially) -->
+            <div id="record-actions" class="flex flex-col sm:flex-row items-center gap-3 hidden">
               <button
-                id="start-record-btn"
-                class="w-16 h-16 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 text-white flex items-center justify-center shadow-lg shadow-purple-500/20 hover:scale-105 active:scale-95 transition-all"
-                title="রেকর্ড শুরু করুন"
+                id="preview-play-btn"
+                class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition-all flex items-center gap-2 border border-slate-700/60"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
                 </svg>
+                <span>রেকর্ডিংটি শুনুন</span>
+              </button>
+              
+              <button
+                id="rerecord-btn"
+                class="px-4 py-2.5 rounded-xl bg-rose-950/40 text-rose-300 text-xs font-semibold hover:bg-rose-900/40 transition-all border border-rose-900/30"
+              >
+                পুনরায় রেকর্ড করুন
               </button>
 
               <button
-                id="stop-record-btn"
-                class="w-16 h-16 rounded-full bg-rose-600 text-white flex items-center justify-center shadow-lg shadow-rose-500/20 animate-pulse hover:scale-105 active:scale-95 transition-all hidden"
-                title="রেকর্ড সম্পন্ন করুন"
+                id="publish-btn"
+                class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-500 text-white text-xs font-extrabold hover:opacity-95 shadow-lg shadow-purple-500/20 transition-all"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H10a1 1 0 01-1-1v-4z" />
-                </svg>
+                বেনামে পোস্ট করুন 🚀
               </button>
-
-              <!-- প্রিভিউ ও পাবলিশ বাটনসমূহ -->
-              <div id="record-actions" class="flex flex-col sm:flex-row items-center gap-3 hidden">
-                <button
-                  id="preview-play-btn"
-                  class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition-all flex items-center gap-2 border border-slate-700/60"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
-                  </svg>
-                  <span>রেকর্ডিংটি শুনুন</span>
-                </button>
-                
-                <button
-                  id="rerecord-btn"
-                  class="px-4 py-2.5 rounded-xl bg-rose-950/40 text-rose-300 text-xs font-semibold hover:bg-rose-900/40 transition-all border border-rose-900/30"
-                >
-                  পুনরায় রেকর্ড করুন
-                </button>
-
-                <button
-                  id="publish-btn"
-                  class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-500 text-white text-xs font-extrabold hover:opacity-95 shadow-lg shadow-purple-500/20 transition-all"
-                >
-                  বেনামে পোস্ট করুন 🚀
-                </button>
-              </div>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ট্যাব ফিল্টারিং মেনু -->
+    <!-- TAB FILTERS -->
     <section class="space-y-4">
       <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
         <div class="flex gap-1.5">
@@ -327,8 +226,9 @@
         </div>
       </div>
 
-      <!-- রিয়াল-টাইম অডিও ফিড স্ট্রিম -->
+      <!-- VOICE STREAM FEED -->
       <div id="voices-feed" class="space-y-4">
+        <!-- Rendered dynamically -->
         <div class="text-center py-16 bg-slate-900/10 rounded-3xl border border-dashed border-slate-800/60">
           <p class="text-slate-500 text-sm">কণ্ঠস্বর লোড হচ্ছে...</p>
         </div>
@@ -336,19 +236,19 @@
     </section>
   </main>
 
-  <!-- ফুটার এবং ডিসক্লেইমার -->
-  <footer class="mt-auto border-t border-slate-900 bg-slate-950/95 backdrop-blur-md py-6 text-center text-xs text-slate-600 space-y-1">
-    <p>© 2026 কথা.io — মনের কথা বলুন নিরাপদে ও সাবলীল উপায়ে।</p>
-    <p class="text-[10px] text-slate-700">ডিজাইন এবং ডেভেলপ করেছেন আপনার মেন্টর ও ফুল-স্ট্যাক ডেভেলপার।</p>
+  <!-- FOOTER -->
+  <footer class="mt-auto border-t border-slate-900 bg-slate-950/90 backdrop-blur-md py-6 text-center text-xs text-slate-600 space-y-1">
+    <p>© 2026 কথা.io — আপনার গোপনীয়তা আমাদের প্রধান অগ্রাধিকার।</p>
+    <p class="text-[10px] text-slate-700">ডিজাইন এবং ডেভেলপ করেছেন একজন এক্সপার্ট ফুল-স্ট্যাক ডেভেলপার।</p>
   </footer>
 
-  <!-- প্ল্যাটফর্মের আসল ব্যাকএন্ড, অ্যাডমিন মডারেশন এবং ভয়েস মড্যুলেশন লজিক -->
+  <!-- PLATFORM BUSINESS LOGIC WITH ES MODULES -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, collection, onSnapshot, addDoc, updateDoc, deleteDoc, increment, arrayUnion, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, collection, onSnapshot, addDoc, updateDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    // ফায়ারবেস কনফিগারেশন
+    // Standard Firebase configurations
     const firebaseConfig = {
       apiKey: "AIzaSyAPFNBjCZy4tp5U4_OqdboSHKhIBNeQ7-w",
       authDomain: "kothadotio.firebaseapp.com",
@@ -359,42 +259,34 @@
       measurementId: "G-0Y160SRTV5"
     };
 
-    // সার্ভিসসমূহ ইনিশিয়েলাইজ করা হচ্ছে
+    // Firebase Initialization
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // এপ্লিকেশন আইডি
+    // Secure App ID and Path Configuration
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'kothadotio';
 
-    // অ্যাডমিন ইমেইল কনস্ট্যান্ট
-    const ADMIN_EMAIL = "omor3c@gmail.com";
-
-    // স্টেট ভেরিয়েবলসমূহ
+    // APP STATE
     let currentUser = null;
-    let isAdmin = false;
     let allVoices = [];
-    let currentTab = 'all';
+    let currentTab = 'all'; // all, trending, personal
     let selectedTag = 'সাধারণ আড্ডা';
-    let bannedUsersList = [];
     const tagPresets = ["সাধারণ আড্ডা", "মনের কষ্ট", "ভালোবাসা", "অনুপ্রেরণা", "গোপন কথা", "গানের সুর", "মজার গল্প"];
 
-    // রেকর্ডার এবং অডিও ম্যানিপুলেশন স্টেট
+    // RECORDING STATE
     let mediaRecorder = null;
-    let activeStream = null; 
-    let originalAudioBlob = null;
-    let originalArrayBuffer = null;
-    let processedBase64 = "";
-    let selectedEffect = "normal"; 
+    let audioChunks = [];
     let recordTimer = null;
     let recordingDuration = 0;
+    let recordedBase64 = "";
     let isRecording = false;
 
-    // কারেন্ট প্লেয়িং অডিও নোড রেফারেন্স
+    // AUDIO PLAYBACK STATE
     let activePlayingAudio = null;
     let activePlayingId = null;
 
-    // কাস্টম টোস্ট মেসেজিং আর্কিটেকচার
+    // Toast Notification System
     function showToast(message, type = 'success') {
       const container = document.getElementById('toast-container');
       const toast = document.createElement('div');
@@ -409,21 +301,22 @@
 
       container.appendChild(toast);
       
+      // Animation entry
       setTimeout(() => {
         toast.classList.remove('scale-95', 'opacity-0');
         toast.classList.add('scale-100', 'opacity-100');
       }, 50);
 
+      // Dismissal
       setTimeout(() => {
         toast.classList.add('scale-95', 'opacity-0');
         setTimeout(() => toast.remove(), 300);
       }, 4000);
     }
 
-    // কাস্টম কনফার্মেশন প্রম্পট ম্যানেজার
+    // Custom Dialog Manager
     let confirmCallback = null;
-    function showConfirmModal(title, text, onConfirm) {
-      document.getElementById('confirm-modal-title').innerText = title;
+    function showConfirmModal(text, onConfirm) {
       document.getElementById('confirm-modal-text').innerText = text;
       document.getElementById('confirm-modal').classList.remove('hidden');
       confirmCallback = onConfirm;
@@ -440,187 +333,62 @@
       confirmCallback = null;
     });
 
-    // গুগল অথেনটিকেশন ও সাইন-ইন
-    async function handleGoogleLogin() {
-      const provider = new GoogleAuthProvider();
+    // STARTING APP - AUTHENTICATE FIRST (RULE 3)
+    const initAuth = async () => {
       try {
-        await signInWithPopup(auth, provider);
-        showToast("সফলভাবে গুগল লগইন সম্পন্ন হয়েছে!", "success");
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
       } catch (err) {
-        console.error("Google login error:", err);
-        showToast("গুগল লগইন করতে সমস্যা হয়েছে। রিফ্রেশ করে আবার চেষ্টা করুন।", "error");
+        console.error("Auth Failure:", err);
+        showToast("ডাটাবেজ সংযোগে সমস্যা হয়েছে। পেজটি রিফ্রেশ করুন।", "error");
       }
-    }
+    };
 
-    // অ্যানোনিমাস বা অতিথি প্রবেশ (Guest Mode) (এটি পপ-আপ ছাড়া কাজ করে)
-    async function handleGuestLogin() {
-      try {
-        await signInAnonymously(auth);
-        showToast("অতিথি হিসেবে সফলভাবে প্রবেশ করেছেন!", "success");
-      } catch (err) {
-        console.error("Anonymous login error:", err);
-        showToast("বেনামে প্রবেশ ব্যর্থ হয়েছে।", "error");
-      }
-    }
-
-    // লগআউট প্রসেস
-    async function handleLogout() {
-      try {
-        await signOut(auth);
-        showToast("লগআউট সম্পন্ন হয়েছে।", "info");
-      } catch (err) {
-        console.error("Logout error:", err);
-      }
-    }
-
-    // AUTH LISTENER (RULE 3)
-    onAuthStateChanged(auth, async (user) => {
+    onAuthStateChanged(auth, (user) => {
       if (user) {
         currentUser = user;
-        isAdmin = (user.email === ADMIN_EMAIL);
-
-        // ১. ব্যানিং স্ট্যাটাস রিয়েল-টাইম চেক
-        const banCheckRef = doc(db, 'artifacts', appId, 'public', 'data', 'bannedUsers', user.uid);
-        const banSnap = await getDoc(banCheckRef);
-        if (banSnap.exists()) {
-          showToast("আপনার অ্যাকাউন্টটি মডারেশন পলিসির কারণে এডমিন দ্বারা ব্যান করা হয়েছে।", "error");
-          await signOut(auth);
-          return;
-        }
-
-        // ২. ইউজার প্রোফাইল ইন্টারফেস আপডেট
-        document.getElementById('auth-buttons-group').classList.add('hidden');
-        document.getElementById('user-profile').classList.remove('hidden');
-        document.getElementById('user-photo').src = user.photoURL || 'https://www.gravatar.com/avatar/?d=mp';
-        document.getElementById('user-name').innerText = user.isAnonymous ? "বেনামী অতিথি" : (user.displayName || 'ইউজার');
-        
-        // পোস্ট করার লক সরিয়ে নেওয়া
-        document.getElementById('recording-lock-overlay').classList.add('hidden');
-
-        // এডমিন ব্যাজ এবং প্যানেল শো
-        if (isAdmin) {
-          document.getElementById('admin-badge').classList.remove('hidden');
-          document.getElementById('admin-panel').classList.remove('hidden');
-          setupAdminListeners();
-        } else {
-          document.getElementById('admin-badge').classList.add('hidden');
-          document.getElementById('admin-panel').classList.add('hidden');
-        }
-
+        const statusElement = document.getElementById('auth-status');
+        statusElement.innerHTML = `
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="font-mono text-[11px] text-purple-300">বেনামী আইডি: ${user.uid.substring(0, 8)}</span>
+        `;
+        // Auth success -> Start loading Firestore Feed
         listenToFeed();
-      } else {
-        // লগআউট স্টেট হ্যান্ডলার
-        currentUser = null;
-        isAdmin = false;
-        document.getElementById('auth-buttons-group').classList.remove('hidden');
-        document.getElementById('user-profile').classList.add('hidden');
-        document.getElementById('admin-panel').classList.add('hidden');
-        document.getElementById('admin-badge').classList.add('hidden');
-        
-        // পোস্ট করার ওপর লক বসানো
-        document.getElementById('recording-lock-overlay').classList.remove('hidden');
-
-        listenToFeed(); // লগইন ছাড়াই যেন শুনতে পারে
       }
     });
 
-    // ব্যানড ইউজার রিয়েল-টাইম তালিকা ট্র্যাকার (এডমিনের জন্য)
-    function setupAdminListeners() {
-      const bannedCollection = collection(db, 'artifacts', appId, 'public', 'data', 'bannedUsers');
-      onSnapshot(bannedCollection, (snapshot) => {
-        bannedUsersList = [];
-        snapshot.forEach(doc => {
-          bannedUsersList.push({ uid: doc.id, ...doc.data() });
-        });
-        
-        const listContainer = document.getElementById('banned-users-list');
-        if (bannedUsersList.length === 0) {
-          listContainer.innerHTML = `<span class="text-slate-600 italic">কোনো ব্যানড ব্যবহারকারী নেই।</span>`;
-        } else {
-          listContainer.innerHTML = bannedUsersList.map(u => `
-            <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-950/40 border border-rose-900/30 text-rose-300">
-              <span>${u.email || u.uid}</span>
-              <button data-uid="${u.uid}" class="unban-btn text-rose-500 hover:text-rose-300 font-bold ml-1">×</button>
-            </span>
-          `).join('');
-
-          document.querySelectorAll('.unban-btn').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-              const uid = e.currentTarget.dataset.uid;
-              await removeBan(uid);
-            });
-          });
-        }
-      });
-    }
-
-    // ইউজার ব্যান অ্যাকশন (RULE 1)
-    async function banUser(uid, email = "N/A") {
-      if (!isAdmin) return;
-      if (uid === currentUser.uid) {
-        showToast("আপনি নিজেকে ব্যান করতে পারবেন না!", "error");
-        return;
-      }
-      try {
-        const banRef = doc(db, 'artifacts', appId, 'public', 'data', 'bannedUsers', uid);
-        await setDoc(banRef, {
-          bannedAt: Date.now(),
-          email: email
-        });
-        showToast(`ব্যবহারকারী (${uid.substring(0, 8)}) সফলভাবে ব্যান হয়েছে।`, "success");
-      } catch (err) {
-        console.error(err);
-        showToast("ব্যান করতে সমস্যা হয়েছে।", "error");
-      }
-    }
-
-    // আনব্যান অ্যাকশন
-    async function removeBan(uid) {
-      if (!isAdmin) return;
-      try {
-        const banRef = doc(db, 'artifacts', appId, 'public', 'data', 'bannedUsers', uid);
-        await deleteDoc(banRef);
-        showToast("ব্যবহারকারীকে আনব্যান করা হয়েছে।", "success");
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    // রিয়েল-টাইম ফিড ট্র্যাকার (RULE 1 & 2)
+    // READ FIRESTORE FEED (RULE 1 & 2)
     function listenToFeed() {
+      if (!currentUser) return;
+
+      // RULE 1: Standard public path for collaborative sandbox data
       const voicesCollection = collection(db, 'artifacts', appId, 'public', 'data', 'voices');
 
+      // RULE 2: No complicated Firestore queries. Get all, then order in JS Memory.
       onSnapshot(voicesCollection, (snapshot) => {
         const list = [];
-        let totalActiveCount = 0;
-        let totalReportsCount = 0;
-
         snapshot.forEach((doc) => {
           const data = doc.data();
           if (!data.deleted) {
             list.push({ id: doc.id, ...data });
-            totalActiveCount++;
-            if (data.reportsCount && data.reportsCount > 0) {
-              totalReportsCount += data.reportsCount;
-            }
           }
         });
 
+        // Sort in Javascript memory: newest first
         list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
         allVoices = list;
-
-        if (isAdmin) {
-          document.getElementById('admin-report-count').innerText = totalReportsCount;
-          document.getElementById('admin-total-voices').innerText = totalActiveCount;
-        }
 
         renderVoices();
       }, (err) => {
         console.error("Firestore listening failed:", err);
+        showToast("ডাটা লোড করতে ব্যর্থ হয়েছে।", "error");
       });
     }
 
-    // ক্যাটাগরি রেন্ডারিং
+    // Dynamic Tag Rendering
     function renderCategories() {
       const container = document.getElementById('category-selector');
       container.innerHTML = tagPresets.map(tag => `
@@ -637,6 +405,7 @@
         </button>
       `).join('');
 
+      // Add click events to newly created tags
       document.querySelectorAll('.category-tag-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
           selectedTag = e.currentTarget.dataset.tag;
@@ -645,17 +414,18 @@
       });
     }
 
-    // অডিও টাইমলাইন ও কন্টেন্ট রেন্ডারার
+    // Dynamic Voices Feed Renderer
     function renderVoices() {
       const feedContainer = document.getElementById('voices-feed');
       const counterElement = document.getElementById('voices-count');
 
+      // Filter based on selected tabs
       const filtered = allVoices.filter(v => {
         if (currentTab === 'personal') {
           return v.creatorId === currentUser?.uid;
         }
         if (currentTab === 'trending') {
-          return v.likes >= 2;
+          return v.likes >= 2; // Filter standard
         }
         return true;
       });
@@ -665,8 +435,8 @@
       if (filtered.length === 0) {
         feedContainer.innerHTML = `
           <div class="text-center py-16 bg-slate-900/10 rounded-3xl border border-dashed border-slate-800/60">
-            <p class="text-slate-500 text-sm">এই মুহূর্তে কোনো কণ্ঠস্বর পাওয়া যায়নি।</p>
-            <p class="text-[11px] text-slate-600 mt-1">প্রথম সুন্দর কন্ঠস্বরটি দিয়ে শুরু হোক আজকের গল্প!</p>
+            <p class="text-slate-500 text-sm">এই ক্যাটাগরিতে এখনো কোনো কণ্ঠস্বর পাওয়া যায়নি।</p>
+            <p class="text-[11px] text-slate-600 mt-1">প্রথম কণ্ঠস্বরটি রেকর্ড করে আপনিই শুরু করতে পারেন!</p>
           </div>
         `;
         return;
@@ -675,13 +445,13 @@
       feedContainer.innerHTML = filtered.map(v => {
         const isLiked = v.likedBy?.includes(currentUser?.uid);
         const isOwnPost = v.creatorId === currentUser?.uid;
-        const hasReported = v.reportedBy?.includes(currentUser?.uid);
         const timeStr = new Date(v.createdAt).toLocaleTimeString('bn-BD', { hour: '2-digit', minute: '2-digit' });
         const dateStr = new Date(v.createdAt).toLocaleDateString('bn-BD', { month: 'short', day: 'numeric' });
 
         return `
-          <article class="p-5 rounded-2xl bg-slate-900/40 border ${v.reportsCount && v.reportsCount > 0 ? 'border-rose-900/40 bg-rose-950/5' : 'border-slate-900'} hover:border-slate-800/60 transition-all duration-200 relative group">
+          <article class="p-5 rounded-2xl bg-slate-900/40 border border-slate-900 hover:border-slate-800/60 transition-all duration-200 relative group">
             
+            <!-- Card Header -->
             <div class="flex items-start justify-between gap-4 mb-3">
               <div>
                 <div class="flex items-center gap-2 mb-1">
@@ -689,35 +459,12 @@
                     #${v.tag}
                   </span>
                   <span class="text-[11px] text-slate-500">${dateStr} | ${timeStr}</span>
-                  ${v.reportsCount && v.reportsCount > 0 ? `
-                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-950 text-rose-500 border border-rose-900/30">🚨 রিপোর্ট: ${v.reportsCount}</span>
-                  ` : ''}
                 </div>
                 <h4 class="text-base font-bold text-slate-100">${v.title || "বেনামী কণ্ঠ"}</h4>
-                <p class="text-[9px] text-slate-600 font-mono">UID: ${v.creatorId || 'N/A'}</p>
               </div>
 
-              <!-- মডারেশন বাটনস বা শেয়ার বাটনস -->
               <div class="flex items-center gap-1">
-                ${isAdmin ? `
-                  <button
-                    data-id="${v.id}"
-                    data-uid="${v.creatorId}"
-                    class="admin-ban-user-btn p-1.5 text-slate-500 hover:text-rose-400 hover:bg-rose-950/25 rounded-lg transition-all"
-                    title="ইউজার ব্যান করুন"
-                  >
-                    🚫 ব্যান
-                  </button>
-                  <button
-                    data-id="${v.id}"
-                    class="admin-delete-voice-btn p-1.5 text-slate-500 hover:text-rose-400 hover:bg-rose-950/25 rounded-lg transition-all"
-                    title="পোস্ট ডিলিট করুন (এডমিন)"
-                  >
-                    🗑️ ডিলিট
-                  </button>
-                ` : ''}
-
-                ${isOwnPost && !isAdmin ? `
+                ${isOwnPost ? `
                   <button
                     data-id="${v.id}"
                     class="delete-voice-btn p-1.5 text-slate-500 hover:text-rose-400 hover:bg-rose-950/20 rounded-lg transition-all"
@@ -740,7 +487,7 @@
               </div>
             </div>
 
-            <!-- অডিও প্লেয়ার ইন্টারফেস -->
+            <!-- Integrated Audio Player Bar -->
             <div class="py-3 px-4 bg-slate-950/60 rounded-xl border border-slate-900 flex items-center justify-between gap-4">
               <div class="flex items-center gap-3">
                 <button
@@ -773,7 +520,7 @@
                 </div>
               </div>
 
-              <!-- animated visualizer -->
+              <!-- Animated Visualizer Pulse Bars -->
               ${activePlayingId === v.id ? `
                 <div class="flex items-end gap-1 h-5 pr-2">
                   <div class="w-[3px] bg-rose-500 animate-[bounce_0.8s_infinite_100ms] rounded-full h-4"></div>
@@ -784,56 +531,42 @@
               ` : ''}
             </div>
 
-            <!-- ইন্টারেক্টিভ অ্যাকশনস -->
-            <div class="flex items-center justify-between mt-4 pt-3 border-t border-slate-900 text-slate-400 text-xs">
-              <div class="flex items-center gap-4">
-                <button 
-                  data-id="${v.id}"
-                  data-likes="${encodeURIComponent(JSON.stringify(v.likedBy || []))}"
-                  class="like-btn flex items-center gap-1.5 py-1 px-2.5 rounded-lg transition-all ${
-                    isLiked ? 'text-rose-500 bg-rose-950/20 font-bold' : 'hover:text-rose-400 hover:bg-slate-850'
-                  }"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="${isLiked ? 'currentColor' : 'none'}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                  </svg>
-                  <span>পছند (${v.likes || 0})</span>
-                </button>
-
-                <button 
-                  data-id="${v.id}"
-                  class="reply-toggle-trigger flex items-center gap-1.5 py-1 px-2.5 rounded-lg hover:text-purple-400 hover:bg-slate-850 transition-all"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                  </svg>
-                  <span>মন্তব্য (${v.replies?.length || 0})</span>
-                </button>
-              </div>
-
-              <!-- স্পষ্ট লাল রিপোর্ট বাটন -->
-              <button
+            <!-- Interactivity Actions panel -->
+            <div class="flex items-center gap-4 mt-4 pt-3 border-t border-slate-900 text-slate-400 text-xs">
+              <button 
                 data-id="${v.id}"
-                data-reported="${encodeURIComponent(JSON.stringify(v.reportedBy || []))}"
-                class="report-btn flex items-center gap-2 py-1.5 px-4 rounded-xl font-bold border transition-all ${
-                  hasReported 
-                    ? 'text-rose-500 bg-rose-950/40 border-rose-800' 
-                    : 'text-slate-300 hover:text-white bg-slate-900 border-slate-800 hover:border-rose-700/60'
+                data-likes="${encodeURIComponent(JSON.stringify(v.likedBy || []))}"
+                class="like-btn flex items-center gap-1.5 py-1 px-2.5 rounded-lg transition-all ${
+                  isLiked ? 'text-rose-500 bg-rose-950/20 font-bold' : 'hover:text-rose-400 hover:bg-slate-850'
                 }"
               >
-                🚨 <span>${hasReported ? 'রিপোর্ট করা হয়েছে' : 'রিপোর্ট করুন'}</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="${isLiked ? 'currentColor' : 'none'}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+                <span>পছন্দ (${v.likes || 0})</span>
+              </button>
+
+              <button 
+                data-id="${v.id}"
+                class="reply-toggle-trigger flex items-center gap-1.5 py-1 px-2.5 rounded-lg hover:text-purple-400 hover:bg-slate-850 transition-all"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+                <span>মন্তব্য (${v.replies?.length || 0})</span>
               </button>
             </div>
 
-            <!-- কলাপসড মন্তব্য বক্স -->
+            <!-- COLLAPSED REPLY/COMMENT BOX -->
             <div id="replies-box-${v.id}" class="mt-4 pt-4 border-t border-slate-900 space-y-3 hidden">
               <h5 class="text-xs font-bold text-slate-400">বেনামী মন্তব্যসমূহ</h5>
               
+              <!-- Reply list -->
               <div class="space-y-2 max-h-36 overflow-y-auto pr-1">
                 ${v.replies && v.replies.length > 0 ? v.replies.map(reply => `
                   <div class="p-2.5 bg-slate-950/40 rounded-xl border border-slate-900">
                     <div class="flex items-center justify-between text-[9px] text-slate-500 mb-1">
-                      <span>👤 ব্যবহারকারী</span>
+                      <span>👤 বেনামী ব্যবহারকারী</span>
                       <span>${new Date(reply.createdAt).toLocaleTimeString('bn-BD', { hour: '2-digit', minute: '2-digit' })}</span>
                     </div>
                     <p class="text-xs text-slate-300">${reply.text}</p>
@@ -843,6 +576,7 @@
                 `}
               </div>
 
+              <!-- Reply entry form -->
               <div class="flex gap-2">
                 <input 
                   id="reply-input-${v.id}"
@@ -866,9 +600,9 @@
       attachVoiceInteractions();
     }
 
-    // ডাইনামিক বাটন অ্যাকশন হ্যান্ডলারসমূহ
+    // Attach Javascript Listeners to Dynamic Feed elements
     function attachVoiceInteractions() {
-      // ১. প্লে/পজ
+      // 1. Play/Pause handler
       document.querySelectorAll('.play-toggle-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
           const id = e.currentTarget.dataset.id;
@@ -877,38 +611,22 @@
         });
       });
 
-      // ২. লাইক প্রদান
+      // 2. Like/Dislike action
       document.querySelectorAll('.like-btn').forEach(btn => {
         btn.addEventListener('click', async (e) => {
-          if (!currentUser) {
-            showToast("পছন্দ করতে প্রথমে লগইন করুন!", "error");
-            return;
-          }
           const id = e.currentTarget.dataset.id;
           const likedBy = JSON.parse(decodeURIComponent(e.currentTarget.dataset.likes));
           await handleLikeAction(id, likedBy);
         });
       });
 
-      // ৩. রিপোর্ট বাটন অ্যাকশন
-      document.querySelectorAll('.report-btn').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-          if (!currentUser) {
-            showToast("রিপোর্ট করার জন্য অনুগ্রহ করে লগইন করুন!", "error");
-            return;
-          }
-          const id = e.currentTarget.dataset.id;
-          const reportedBy = JSON.parse(decodeURIComponent(e.currentTarget.dataset.reported));
-          await handleReportAction(id, reportedBy);
-        });
-      });
-
-      // ৪. শেয়ার করা
+      // 3. Share action
       document.querySelectorAll('.share-voice-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
           const id = e.currentTarget.dataset.id;
           const shareUrl = `${window.location.origin}?voice=${id}`;
           
+          // Secure clipboard copy
           const tempInput = document.createElement("input");
           tempInput.value = shareUrl;
           document.body.appendChild(tempInput);
@@ -920,7 +638,7 @@
         });
       });
 
-      // ৫. মন্তব্য বক্স ওপেন করা
+      // 4. Toggle replies block visibility
       document.querySelectorAll('.reply-toggle-trigger').forEach(btn => {
         btn.addEventListener('click', (e) => {
           const id = e.currentTarget.dataset.id;
@@ -929,13 +647,9 @@
         });
       });
 
-      // ৬. মন্তব্য সাবমিট করা
+      // 5. Submit reply
       document.querySelectorAll('.submit-reply-btn').forEach(btn => {
         btn.addEventListener('click', async (e) => {
-          if (!currentUser) {
-            showToast("মন্তব্য পোস্ট করার জন্য প্রথমে লগইন করুন!", "error");
-            return;
-          }
           const id = e.currentTarget.dataset.id;
           const input = document.getElementById(`reply-input-${id}`);
           const text = input.value.trim();
@@ -948,11 +662,11 @@
         });
       });
 
-      // ৭. কাস্টম সিকিউর ডিলিট মডাল
+      // 6. Delete post securely
       document.querySelectorAll('.delete-voice-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
           const id = e.currentTarget.dataset.id;
-          showConfirmModal("পোস্ট ডিলিট নিশ্চিতকরণ", "আপনি কি নিশ্চিতভাবে আপনার এই পোস্টটি মুছে ফেলতে চান?", async () => {
+          showConfirmModal("আপনি কি নিশ্চিতভাবে আপনার এই পোস্টটি মুছে ফেলতে চান?", async () => {
             try {
               const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'voices', id);
               await updateDoc(docRef, {
@@ -961,50 +675,18 @@
               });
               showToast("আপনার কথাটি ডিলিট করা হয়েছে।", "success");
             } catch (err) {
-              console.error(err);
-              showToast("ডিলিট করতে ব্যর্থ হয়েছে।", "error");
+              console.error("Delete Action Error:", err);
+              showToast("ডিলিট করা যায়নি।", "error");
             }
           });
         });
       });
-
-      // ৮. এডমিন ডিলিট অ্যাকশন
-      if (isAdmin) {
-        document.querySelectorAll('.admin-delete-voice-btn').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            const id = e.currentTarget.dataset.id;
-            showConfirmModal("এডমিন রিমুভাল কনফার্মেশন", "একজন এডমিন হিসেবে আপনি কি পোস্টটি চিরতরে মুছে দিতে চান?", async () => {
-              try {
-                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'voices', id);
-                await updateDoc(docRef, {
-                  audioData: "",
-                  deleted: true,
-                  deletedByAdmin: true
-                });
-                showToast("পোস্টটি এডমিন ক্ষমতা দ্বারা ডিলিট করা হয়েছে।", "success");
-              } catch (err) {
-                console.error(err);
-                showToast("অপারেশন ব্যর্থ হয়েছে।", "error");
-              }
-            });
-          });
-        });
-
-        // ৯. এডমিন ইনস্ট্যান্ট ইউজার ব্যান অ্যাকশন
-        document.querySelectorAll('.admin-ban-user-btn').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            const uid = e.currentTarget.dataset.uid;
-            showConfirmModal("ইউজার ব্যানড নিশ্চিতকরণ", `আপনি কি নিশ্চিতভাবে ইউজার UID: ${uid} কে চিরতরে ব্যান করতে চান?`, async () => {
-              await banUser(uid);
-            });
-          });
-        });
-      }
     }
 
-    // অডিও প্লেব্যাক ম্যানেজার
+    // Audio Playback Controller
     function toggleAudioPlayback(id, base64Data) {
       if (activePlayingId === id) {
+        // Already playing this audio, pause it
         if (activePlayingAudio) {
           activePlayingAudio.pause();
         }
@@ -1012,6 +694,7 @@
         activePlayingAudio = null;
         renderVoices();
       } else {
+        // If another is active, pause it first
         if (activePlayingAudio) {
           activePlayingAudio.pause();
         }
@@ -1036,14 +719,15 @@
             renderVoices();
           });
         } catch (e) {
-          console.error(e);
-          showToast("অডিও প্লে করতে ত্রুটি দেখা দিয়েছে।", "error");
+          console.error("Audio Load Error:", e);
+          showToast("অডিও চালু করা যায়নি।", "error");
         }
       }
     }
 
-    // লাইক অ্যাকশন
+    // Like handler
     async function handleLikeAction(id, likedByArray) {
+      if (!currentUser) return;
       const hasLiked = likedByArray.includes(currentUser.uid);
       const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'voices', id);
 
@@ -1063,39 +747,13 @@
           showToast("আপনি ভালোবাসার রিয়্যাক্ট জানিয়েছেন! ❤️");
         }
       } catch (e) {
-        console.error(e);
+        console.error("Like Action Error:", e);
       }
     }
 
-    // রিপোর্ট হ্যান্ডলিং ইঞ্জিন
-    async function handleReportAction(id, reportedByArray) {
-      const hasReported = reportedByArray.includes(currentUser.uid);
-      const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'voices', id);
-
-      try {
-        if (hasReported) {
-          showToast("আপনি ইতিমধ্যে এই পোস্টটিতে রিপোর্ট করেছেন।", "info");
-          return;
-        }
-
-        showConfirmModal("রিপোর্ট নিশ্চিতকরণ", "আপনি কি এই অডিও কনটেন্টটির বিরুদ্ধে রিপোর্ট করতে চান? এডমিন এটি রিভিউ করবেন।", async () => {
-          try {
-            await updateDoc(docRef, {
-              reportedBy: arrayUnion(currentUser.uid),
-              reportsCount: increment(1)
-            });
-            showToast("আপনার রিপোর্টটি জমা নেওয়া হয়েছে। ধন্যবাদ। 🚨");
-          } catch (e) {
-            console.error(e);
-          }
-        });
-      } catch (e) {
-        console.error(e);
-      }
-    }
-
-    // মন্তব্য যুক্ত করার ফাংশন
+    // Reply submitter handler
     async function handleReplySubmission(voiceId, text) {
+      if (!currentUser) return;
       const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'voices', voiceId);
       const newReply = {
         id: crypto.randomUUID(),
@@ -1110,103 +768,53 @@
         });
         showToast("আপনার বেনামী মন্তব্য সফলভাবে যুক্ত হয়েছে।");
       } catch (err) {
-        console.error(err);
+        console.error("Reply database addition error:", err);
         showToast("মন্তব্য সংরক্ষণ ব্যর্থ হয়েছে।", "error");
       }
     }
 
-    // --- আপগ্রেড করা এবং অত্যন্ত শক্তিশালী লোকাল সিকিউর অডিও রেকর্ডার মডিউল ---
+    // Recording Controllers (Audio Capture engine)
     async function initRecorder() {
       try {
-        if (!currentUser) {
-          showToast("রেকর্ড করতে প্রথমে গুগল বা বেনামী অতিথি হিসেবে প্রবেশ করুন।", "error");
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          showToast("আপনার ডিভাইসে মাইক্রোফোন সুবিধা কাজ করছে না।", "error");
           return;
         }
 
-        const hasMediaDevices = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
-
-        if (!hasMediaDevices) {
-          let errorMsg = "আপনার ব্রাউজারটি সিকিউরড মোডে নেই।";
-          if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
-            errorMsg = "মাইক্রোফোন চালুর জন্য সাইটটি অবশ্যই সুরক্ষিত 'https://' প্রোটোকলে চালু থাকতে হবে।";
-          } else {
-            errorMsg = "আপনার ব্রাউজার বা ডিভাইসে মাইক্রোফোন সাপোর্ট করছে না। অনুগ্রহ করে ক্রোম ব্রাউজার ব্যবহার করুন।";
-          }
-          
-          showToast(errorMsg, "error");
-          document.getElementById('recorder-status-text').innerHTML = `
-            <span class="text-xs text-rose-400 font-bold flex flex-col items-center gap-1.5 p-3 bg-rose-950/20 border border-rose-900/30 rounded-xl">
-              ⚠️ ${errorMsg}
-              <span class="text-[10px] font-normal text-slate-400">সমাধান: লিঙ্কের শুরুতে http:// এর জায়গায় https:// লিখে পেজটি ওপেন করুন।</span>
-            </span>`;
-          return;
-        }
-
-        // --- ওমর, লক্ষ্য করো! অ্যান্ড্রয়েড শাওমি/রিয়েলমি কাস্টম রমে এই মাল্টি-লেভেল ফলব্যাক মেকানিজমটি এখন চমৎকার কাজ করবে ---
-        let stream;
-        try {
-          // লেভেল ১: প্রথমে আধুনিক ফিল্টারসহ ট্রাই করা হচ্ছে
-          stream = await navigator.mediaDevices.getUserMedia({ 
-            audio: {
-              echoCancellation: true,
-              noiseSuppression: true,
-              autoGainControl: true
-            } 
-          });
-        } catch (constraintsError) {
-          console.warn("অ্যাডভান্সড ফিল্টার ব্যর্থ হয়েছে, সাধারণ মোডে সচল করা হচ্ছে:", constraintsError);
-          // লেভেল ২: যদি আগেরটি ব্যর্থ হয়, তাহলে পিওর র (Raw) মোডে চালু করা হবে
-          stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        }
-
-        activeStream = stream; // সেশন ট্র্যাকার স্টোর করা হলো
-
-        // ডাইনামিক মোবাইল অডিও কোডেক ডিটেকশন (ক্র্যাশ এড়ানোর জন্য)
-        let options = {};
-        if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
-          options = { mimeType: 'audio/webm;codecs=opus' };
-        } else if (MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')) {
-          options = { mimeType: 'audio/ogg;codecs=opus' };
-        } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
-          options = { mimeType: 'audio/mp4' };
-        }
-
-        mediaRecorder = new MediaRecorder(stream, options);
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
         audioChunks = [];
 
         mediaRecorder.ondataavailable = (e) => {
-          if (e.data && e.data.size > 0) {
-            audioChunks.push(e.data);
-          }
+          if (e.data.size > 0) audioChunks.push(e.data);
         };
 
-        mediaRecorder.onstop = async () => {
-          // রেকর্ড শেষ হওয়া মাত্রই আমরা অডিও ট্র্যাক ক্লোজ করে দেব যাতে ব্রাউজারের সবুজ লাইটটি বন্ধ হয়ে যায়
+        mediaRecorder.onstop = () => {
+          const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+          const reader = new FileReader();
+          reader.readAsDataURL(audioBlob);
+          reader.onloadend = () => {
+            recordedBase64 = reader.result;
+            showToast("রেকর্ডিং সম্পন্ন হয়েছে!", "success");
+            
+            // Switch layout to preview mode
+            document.getElementById('start-record-btn').classList.add('hidden');
+            document.getElementById('stop-record-btn').classList.add('hidden');
+            document.getElementById('record-actions').classList.remove('hidden');
+            document.getElementById('recorder-status-text').innerHTML = `
+              <span class="text-xs text-emerald-400 flex items-center justify-center gap-1 font-medium">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> অডিও প্রস্তুত হয়েছে
+              </span>`;
+          };
+          
+          // Stop capturing tracks to free microphone icon indicator
           stream.getTracks().forEach(track => track.stop());
-          activeStream = null;
-
-          originalAudioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
-          originalArrayBuffer = await originalAudioBlob.arrayBuffer();
-
-          // প্রথম রূপান্তর
-          await applyVoiceEffect("normal");
-
-          showToast("রেকর্ডিং সম্পন্ন হয়েছে! এবার ভয়েস ইফেক্ট চয়েস করুন।", "success");
-          
-          document.getElementById('start-record-btn').classList.add('hidden');
-          document.getElementById('stop-record-btn').classList.add('hidden');
-          document.getElementById('record-actions').classList.remove('hidden');
-          document.getElementById('voice-effects-panel').classList.remove('hidden');
-          
-          document.getElementById('recorder-status-text').innerHTML = `
-            <span class="text-xs text-emerald-400 flex items-center justify-center gap-1 font-medium">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> অডিও প্রস্তুত হয়েছে
-            </span>`;
         };
 
         mediaRecorder.start();
         isRecording = true;
         
+        // Timer display setup
         recordingDuration = 0;
         document.getElementById('timer-display').classList.remove('hidden');
         document.getElementById('timer-display').innerText = formatDuration(0);
@@ -1225,21 +833,8 @@
         }, 1000);
 
       } catch (err) {
-        console.error("Microphone Access Error:", err);
-        let errorMsg = "মাইক্রোফোন চালু করা যায়নি। পারমিশন চেক করুন।";
-        
-        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-          errorMsg = "মাইক্রোফোন ব্যবহারের অনুমতি প্রত্যাখ্যাত হয়েছে। ব্রাউজার সেটিংসে গিয়ে পারমিশন 'Allow' করুন।";
-        } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
-          errorMsg = "আপনার ডিভাইসে কোনো মাইক্রোফোন খুঁজে পাওয়া যায়নি।";
-        }
-        
-        showToast(errorMsg, "error");
-        document.getElementById('recorder-status-text').innerHTML = `
-          <span class="text-xs text-rose-400 font-bold flex flex-col items-center gap-1.5 p-3 bg-rose-950/20 border border-rose-900/30 rounded-xl">
-            ⚠️ ${errorMsg}
-            <span class="text-[10px] font-normal text-slate-400">ক্রোম ব্রাউজারের উপরে থাকা তালা (Lock) চিহ্নে ক্লিক করে মাইক্রোফোনটি 'Allowed' করুন।</span>
-          </span>`;
+        console.error("Recording initialization failed:", err);
+        showToast("মাইক্রোফোন চালু করা যায়নি। দয়া করে পারমিশন চেক করুন।", "error");
       }
     }
 
@@ -1251,164 +846,29 @@
       }
     }
 
-    // ডিজিটাল সিগন্যাল প্রসেসিং (DSP) এবং ভয়েস চেঞ্জার কোড ইঞ্জিন
-    async function applyVoiceEffect(effectType) {
-      selectedEffect = effectType;
-      
-      document.querySelectorAll('.effect-btn').forEach(btn => {
-        if (btn.dataset.effect === effectType) {
-          btn.className = "effect-btn px-3 py-2.5 rounded-xl text-xs font-semibold bg-purple-600 text-white border border-purple-500 transition-all";
-        } else {
-          btn.className = "effect-btn px-3 py-2.5 rounded-xl text-xs font-semibold bg-slate-900 text-slate-300 hover:bg-slate-850 transition-all";
-        }
-      });
-
-      if (effectType === "normal") {
-        const reader = new FileReader();
-        reader.readAsDataURL(originalAudioBlob);
-        reader.onloadend = () => {
-          processedBase64 = reader.result;
-        };
-        return;
-      }
-
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const decodedBuffer = await audioCtx.decodeAudioData(originalArrayBuffer.slice(0));
-      
-      const offlineCtx = new OfflineAudioContext(
-        decodedBuffer.numberOfChannels,
-        decodedBuffer.length,
-        decodedBuffer.sampleRate
-      );
-
-      const source = offlineCtx.createBufferSource();
-      source.buffer = decodedBuffer;
-
-      // বিভিন্ন মডিউলেশন ইফেক্টস কনফিগারেশন
-      if (effectType === "baby") {
-        source.playbackRate.value = 1.45;
-        const highPass = offlineCtx.createBiquadFilter();
-        highPass.type = "highpass";
-        highPass.frequency.value = 350;
-        source.connect(highPass);
-        highPass.connect(offlineCtx.destination);
-
-      } else if (effectType === "cartoon") {
-        source.playbackRate.value = 1.25;
-        const bandPass = offlineCtx.createBiquadFilter();
-        bandPass.type = "bandpass";
-        bandPass.frequency.value = 1000;
-        source.connect(bandPass);
-        bandPass.connect(offlineCtx.destination);
-
-      } else if (effectType === "robot") {
-        const biquad = offlineCtx.createBiquadFilter();
-        biquad.type = "peaking";
-        biquad.frequency.value = 800;
-        biquad.Q.value = 10;
-        biquad.gain.value = 15;
-        const gainNode = offlineCtx.createGain();
-        source.connect(biquad);
-        biquad.connect(gainNode);
-        gainNode.connect(offlineCtx.destination);
-
-      } else if (effectType === "monster") {
-        source.playbackRate.value = 0.72;
-        const lowPass = offlineCtx.createBiquadFilter();
-        lowPass.type = "lowpass";
-        lowPass.frequency.value = 900;
-        source.connect(lowPass);
-        lowPass.connect(offlineCtx.destination);
-      }
-
-      source.start(0);
-      const renderedBuffer = await offlineCtx.startRendering();
-      const wavBlob = audioBufferToWav(renderedBuffer);
-      
-      const reader = new FileReader();
-      reader.readAsDataURL(wavBlob);
-      reader.onloadend = () => {
-        processedBase64 = reader.result;
-      };
-    }
-
-    // WAV এনকোডার ইউটিলিটি
-    function audioBufferToWav(buffer) {
-      let numOfChan = buffer.numberOfChannels,
-          length = buffer.length * numOfChan * 2 + 44,
-          bufferArr = new ArrayBuffer(length),
-          view = new DataView(bufferArr),
-          channels = [], i, sample,
-          offset = 0,
-          pos = 0;
-
-      setUint32(0x46464952); // "RIFF"
-      setUint32(length - 8); 
-      setUint32(0x45564157); // "WAVE"
-      setUint32(0x20746d66); // "fmt "
-      setUint32(16);         
-      setUint16(1);          
-      setUint16(numOfChan);  
-      setUint32(buffer.sampleRate); 
-      setUint32(buffer.sampleRate * 2 * numOfChan); 
-      setUint16(numOfChan * 2); 
-      setUint16(16);         
-      setUint32(0x61746164); // "data"
-      setUint32(length - pos - 4); 
-
-      for(i = 0; i < buffer.numberOfChannels; i++) {
-        channels.push(buffer.getChannelData(i));
-      }
-
-      while(pos < length) {
-        for(i = 0; i < numOfChan; i++) {
-          sample = Math.max(-1, Math.min(1, channels[i][offset])); 
-          sample = (sample < 0 ? sample * 0x8000 : sample * 0x7FFF); 
-          view.setInt16(pos, sample, true); 
-          pos += 2;
-        }
-        offset++;
-      }
-      return new Blob([bufferArr], { type: "audio/wav" });
-
-      function setUint16(data) {
-        view.setUint16(pos, data, true);
-        pos += 2;
-      }
-      function setUint32(data) {
-        view.setUint32(pos, data, true);
-        pos += 4;
-      }
-    }
-
-    // রেকর্ডার স্টেট রিসেট
     function resetRecorderState() {
-      if (activeStream) {
-        activeStream.getTracks().forEach(track => track.stop());
-        activeStream = null;
+      if (mediaRecorder && isRecording) {
+        mediaRecorder.stop();
       }
       isRecording = false;
       clearInterval(recordTimer);
       audioChunks = [];
       recordingDuration = 0;
-      processedBase64 = "";
-      originalAudioBlob = null;
-      originalArrayBuffer = null;
-      selectedEffect = "normal";
+      recordedBase64 = "";
 
+      // Back to default styling
       document.getElementById('timer-display').classList.add('hidden');
       document.getElementById('start-record-btn').classList.remove('hidden');
       document.getElementById('stop-record-btn').classList.add('hidden');
       document.getElementById('record-actions').classList.add('hidden');
-      document.getElementById('voice-effects-panel').classList.add('hidden');
       document.getElementById('recorder-status-text').innerText = "সর্বোচ্চ ১ মিনিট রেকর্ড করতে পারবেন";
       document.getElementById('voice-title-input').value = "";
     }
 
-    // পাবলিশ অডিও
+    // Publish Voice to Firestore
     async function publishVoice() {
-      if (!processedBase64) {
-        showToast("কোনো রেকর্ডিং ফাইল খুঁজে পাওয়া যায়নি।", "error");
+      if (!recordedBase64) {
+        showToast("কোনো রেকর্ডিং ফাইল পাওয়া যায়নি।", "error");
         return;
       }
 
@@ -1420,36 +880,34 @@
         await addDoc(voicesCollection, {
           title,
           tag: selectedTag,
-          audioData: processedBase64,
+          audioData: recordedBase64,
           duration: recordingDuration,
           creatorId: currentUser.uid,
           likes: 0,
           likedBy: [],
           replies: [],
-          reportsCount: 0,
-          reportedBy: [],
           createdAt: Date.now()
         });
 
-        showToast("আপনার কথাটি সফলভাবে কথা.io তে প্রকাশ করা হয়েছে! 🎉");
+        showToast("আপনার কথাটি সফলভাবে বেনামে প্রকাশ করা হয়েছে! 🎉");
         resetRecorderState();
       } catch (err) {
-        console.error(err);
-        showToast("প্রকাশ করতে সমস্যা হয়েছে।", "error");
+        console.error("Publishing error:", err);
+        showToast("প্রকাশ করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।", "error");
       }
     }
 
-    // সেকেন্ড ফরম্যাটিং
+    // Helper: format duration (seconds) -> e.g. "0:45"
     function formatDuration(seconds) {
       const mins = Math.floor(seconds / 60);
       const secs = seconds % 60;
       return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
     }
 
-    // প্রিভিউ প্লেব্যাক
+    // Trigger Play/Pause preview of recorded audio
     let previewAudioInstance = null;
     function handlePreviewPlayback() {
-      if (!processedBase64) return;
+      if (!recordedBase64) return;
 
       if (previewAudioInstance && !previewAudioInstance.paused) {
         previewAudioInstance.pause();
@@ -1460,7 +918,7 @@
           <span>রেকর্ডিংটি শুনুন</span>
         `;
       } else {
-        previewAudioInstance = new Audio(processedBase64);
+        previewAudioInstance = new Audio(recordedBase64);
         previewAudioInstance.play();
         document.getElementById('preview-play-btn').innerHTML = `
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -1480,7 +938,7 @@
       }
     }
 
-    // ফিল্টার ট্যাব অ্যাকশন কন্ট্রোল
+    // TABS CONTROL LOGIC
     function switchTab(tabId, tabElement) {
       currentTab = tabId;
       document.querySelectorAll('#tab-all, #tab-trending, #tab-mine').forEach(btn => {
@@ -1490,15 +948,7 @@
       renderVoices();
     }
 
-    // ইভেন্ট লিসেনারসমূহ রেজিস্টার করা হচ্ছে
-    document.getElementById('login-btn').addEventListener('click', handleGoogleLogin);
-    document.getElementById('guest-login-btn').addEventListener('click', handleGuestLogin);
-    
-    document.getElementById('auth-lock-google-btn').addEventListener('click', handleGoogleLogin);
-    document.getElementById('auth-lock-guest-btn').addEventListener('click', handleGuestLogin);
-    
-    document.getElementById('logout-btn').addEventListener('click', handleLogout);
-
+    // EVENT LISTENERS REGISTER
     document.getElementById('start-record-btn').addEventListener('click', initRecorder);
     document.getElementById('stop-record-btn').addEventListener('click', stopRecordingProcess);
     document.getElementById('rerecord-btn').addEventListener('click', resetRecorderState);
@@ -1509,31 +959,9 @@
     document.getElementById('tab-trending').addEventListener('click', (e) => switchTab('trending', e.currentTarget));
     document.getElementById('tab-mine').addEventListener('click', (e) => switchTab('personal', e.currentTarget));
 
-    // কুইক ব্যান বাটন অ্যাকশন
-    document.getElementById('quick-ban-btn').addEventListener('click', async () => {
-      const input = document.getElementById('quick-ban-input');
-      const uid = input.value.trim();
-      if (!uid) {
-        showToast("অনুগ্রহ করে একটি সঠিক ইউজার আইডি দিন!", "error");
-        return;
-      }
-      showConfirmModal("ইউজার ব্যানড নিশ্চিতকরণ", `আপনি কি ম্যানুয়ালি এই ইউজার (${uid}) কে ব্যান করতে চান?`, async () => {
-        await banUser(uid);
-        input.value = "";
-      });
-    });
-
-    // প্রতিটি ইফেক্ট বাটনে ক্লিক ইভেন্ট সেটআপ
-    document.querySelectorAll('.effect-btn').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        const effect = e.currentTarget.dataset.effect;
-        showToast("কণ্ঠ রূপান্তর করা হচ্ছে... অনুগ্রহ করে ২ সেকেন্ড অপেক্ষা করুন।", "info");
-        await applyVoiceEffect(effect);
-      });
-    });
-
-    // ইনিশিয়াল লোডিং ট্রিগার
+    // ON DOM LOAD INITIALIZATIONS
     window.onload = () => {
+      initAuth();
       renderCategories();
     };
 
